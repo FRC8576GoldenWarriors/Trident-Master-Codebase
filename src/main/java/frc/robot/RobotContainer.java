@@ -12,12 +12,21 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Subsystems.ArmPivot.Pivot;
+import frc.robot.Subsystems.ArmPivot.PivotIOSparkMax;
+import frc.robot.Subsystems.ArmPivot.Pivot.PivotPositions;
+import frc.robot.Subsystems.ArmWinch.ArmWinch;
+import frc.robot.Subsystems.ArmWinch.ArmWinchIOSparkMax;
+import frc.robot.Subsystems.ArmWinch.ArmWinch.WinchStates;
 import frc.robot.Subsystems.SwerveDrive.Drivetrain;
 
 public class RobotContainer {
   public static Drivetrain m_Drivetrain;
   public static final CommandXboxController driverController =
       new CommandXboxController(0);
+
+  public static final Pivot armPivot = new Pivot(new PivotIOSparkMax());
+  public static final ArmWinch armWinch = new ArmWinch(new ArmWinchIOSparkMax());
   public final JoystickButton resetHeading_Start =
       new JoystickButton(driverController.getHID(), XboxController.Button.kStart.value);
   public final SendableChooser<Command> autoChooser;
@@ -31,6 +40,11 @@ public class RobotContainer {
 
   private void configureBindings() {
     resetHeading_Start.onTrue(new InstantCommand(m_Drivetrain::zeroHeading, m_Drivetrain));
+    driverController.povUp().whileTrue(new InstantCommand(()->armPivot.setPivotPosition(PivotPositions.ManualControl)));
+    driverController.povDown().whileTrue(new InstantCommand(()->armPivot.setPivotPosition(PivotPositions.ManualControl)));
+
+    driverController.y().whileTrue(new InstantCommand(()->armWinch.setWantedState(WinchStates.ManualControl)));
+    driverController.a().whileTrue(new InstantCommand(()->armWinch.setWantedState(WinchStates.ManualControl)));
   }
 
   public Command getAutonomousCommand() {

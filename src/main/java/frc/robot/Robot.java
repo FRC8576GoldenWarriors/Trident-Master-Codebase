@@ -28,7 +28,7 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void robotInit() {
-    Logger.recordMetadata("Goldfish", "Goldfish"); // Set a metadata value
+    Logger.recordMetadata("Trident", "Trident"); // Set a metadata value
 
     if (isReal()) {
       // 8576.winWorlds();
