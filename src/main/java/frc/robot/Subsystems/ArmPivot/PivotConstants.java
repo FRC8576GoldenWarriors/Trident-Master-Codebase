@@ -3,11 +3,11 @@ package frc.robot.Subsystems.ArmPivot;
 public class PivotConstants {
   public class HardwareConstants {
     public static int pivotSparkMaxID = 22;
-    public static int thruBoreID = 4;
+    public static int thruBoreID = 0;//7;//6;//4;
     public static boolean motorInverted = true;
     public static boolean thruBoreInverted = false;
-    public static double thruBoreExpectedZero = 1.0;
-    public static double thruBoreFullRange = 0.0;
+    public static double thruBoreExpectedZero = 0.0;
+    public static double thruBoreFullRange = 1.0;
     public static int currentLimit = 20;
   }
 

@@ -10,7 +10,7 @@ public interface ArmWinchIO {
     public double armMotorVoltage = 0.0;
     public double armMotorCurrent = 0.0;
     public double thruBorePosition = 0.0;
-    public boolean thruBoreConnected = false;
+    public double thruBoreVelocity = 0.0;
   }
 
   default void setVoltage(double voltage) {}

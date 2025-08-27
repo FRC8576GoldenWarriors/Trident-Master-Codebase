@@ -4,12 +4,11 @@
 
 package frc.robot.Subsystems.ArmWinch;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
+import org.littletonrobotics.junction.Logger;
 
 public class ArmWinch extends SubsystemBase {
   /** Creates a new ArmWinch. */
@@ -17,7 +16,7 @@ public class ArmWinch extends SubsystemBase {
 
   private ArmWinchInputsAutoLogged inputs = new ArmWinchInputsAutoLogged();
 
-  public enum WinchStates{
+  public enum WinchStates {
     Idle,
     ManualControl
   }
@@ -33,37 +32,34 @@ public class ArmWinch extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Arm Winch", inputs);
     Logger.recordOutput("Arm Winch/Position", getPosition());
-    SmartDashboard.putNumber("Winch Position",getPosition());
-    if(DriverStation.isEnabled()){
+    SmartDashboard.putNumber("Winch Position", getPosition());
+    if (DriverStation.isEnabled()) {
       switch (wantedState) {
         case Idle:
           io.setVoltage(0);
           break;
         case ManualControl:
-        if(RobotContainer.driverController.a().getAsBoolean()){
-          io.setSpeed(0.3);
-        }
-        else if(RobotContainer.driverController.y().getAsBoolean()){
-          io.setSpeed(-0.3);
-        }
-        else{
-          wantedState = WinchStates.Idle;
-        }
+          if (RobotContainer.driverController.a().getAsBoolean()) {
+            io.setSpeed(0.3);
+          } else if (RobotContainer.driverController.y().getAsBoolean()) {
+            io.setSpeed(-0.3);
+          } else {
+            wantedState = WinchStates.Idle;
+          }
         default:
           break;
       }
-    }
-    else{
+    } else {
       wantedState = WinchStates.Idle;
     }
     // This method will be called once per scheduler run
   }
 
-  public void setWantedState(WinchStates wantedState){
+  public void setWantedState(WinchStates wantedState) {
     this.wantedState = wantedState;
   }
 
-  public double getPosition(){
+  public double getPosition() {
     return inputs.thruBorePosition;
   }
 }

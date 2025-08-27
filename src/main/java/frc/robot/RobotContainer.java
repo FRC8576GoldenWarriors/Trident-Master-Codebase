@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.Commands.SwerveDrive;
 import frc.robot.Subsystems.ArmPivot.Pivot;
 import frc.robot.Subsystems.ArmPivot.PivotIOSparkMax;
 import frc.robot.Subsystems.ArmPivot.Pivot.PivotPositions;
@@ -24,7 +25,6 @@ public class RobotContainer {
   public static Drivetrain m_Drivetrain;
   public static final CommandXboxController driverController =
       new CommandXboxController(0);
-
   public static final Pivot armPivot = new Pivot(new PivotIOSparkMax());
   public static final ArmWinch armWinch = new ArmWinch(new ArmWinchIOSparkMax());
   public final JoystickButton resetHeading_Start =
@@ -32,7 +32,7 @@ public class RobotContainer {
   public final SendableChooser<Command> autoChooser;
   public RobotContainer() {
     m_Drivetrain = Drivetrain.getInstance();
-
+    m_Drivetrain.setDefaultCommand(new SwerveDrive());
     registerNamedCommands();
     configureBindings();
     autoChooser = AutoBuilder.buildAutoChooser();

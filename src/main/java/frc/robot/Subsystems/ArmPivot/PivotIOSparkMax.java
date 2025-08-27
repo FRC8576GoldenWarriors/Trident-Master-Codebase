@@ -24,6 +24,8 @@ public class PivotIOSparkMax implements PivotIO {
             PivotConstants.HardwareConstants.thruBoreFullRange,
             PivotConstants.HardwareConstants.thruBoreExpectedZero);
 
+    // thruBore.setAssumedFrequenPcy(966);
+    // thruBore.setConnectedFrequencyThreshold(35);
     thruBore.setInverted(PivotConstants.HardwareConstants.thruBoreInverted);
   }
 
