@@ -2,7 +2,6 @@ package frc.robot.Subsystems.ArmWinch;
 
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Encoder;
 import frc.lib.drivers.WarriorSparkMax;
 
@@ -20,17 +19,17 @@ public class ArmWinchIOSparkMax implements ArmWinchIO {
             ArmWinchConstants.HardwareConstants.currentLimit);
     absEncoder =
         new Encoder(
-            ArmWinchConstants.HardwareConstants.encoderPort1,ArmWinchConstants.HardwareConstants.encoderPort2);
+            ArmWinchConstants.HardwareConstants.encoderPort1,
+            ArmWinchConstants.HardwareConstants.encoderPort2);
 
     absEncoder.setDistancePerPulse(360);
-
   }
 
   @Override
   public void updateInputs(ArmWinchInputs inputs) {
     inputs.armMotorVoltage = winchMax.getAppliedOutput();
     inputs.armMotorCurrent = winchMax.getOutputCurrent();
-    inputs.thruBorePosition = absEncoder.getDistance()/2048;
+    inputs.thruBorePosition = absEncoder.getDistance() / 2048;
     inputs.thruBoreVelocity = absEncoder.getRate();
   }
 
