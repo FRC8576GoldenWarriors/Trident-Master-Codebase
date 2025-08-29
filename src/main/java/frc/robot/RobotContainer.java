@@ -43,8 +43,9 @@ public class RobotContainer {
     driverController.povUp().whileTrue(new InstantCommand(()->armPivot.setPivotPosition(PivotPositions.ManualControl)));
     driverController.povDown().whileTrue(new InstantCommand(()->armPivot.setPivotPosition(PivotPositions.ManualControl)));
 
-    driverController.y().whileTrue(new InstantCommand(()->armWinch.setWantedState(WinchStates.ManualControl)));
-    driverController.a().whileTrue(new InstantCommand(()->armWinch.setWantedState(WinchStates.ManualControl)));
+    driverController.y().whileTrue(new InstantCommand(()->armWinch.setWantedState(WinchStates.ManualControl),armWinch));
+    driverController.a().whileTrue(new InstantCommand(()->armWinch.setWantedState(WinchStates.ManualControl),armWinch));
+    driverController.b().onTrue(new InstantCommand(()->armWinch.setWantedState(WinchStates.TestPID),armWinch));
   }
 
   public Command getAutonomousCommand() {

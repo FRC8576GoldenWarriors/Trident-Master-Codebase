@@ -42,4 +42,9 @@ public class ArmWinchIOSparkMax implements ArmWinchIO {
   public void setSpeed(double speed) {
     winchMax.set(speed);
   }
+
+  @Override
+  public void zeroEncoder() {
+    absEncoder.reset();
+  }
 }

@@ -4,6 +4,7 @@
 
 package frc.robot.Subsystems.ArmWinch;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -18,13 +19,23 @@ public class ArmWinch extends SubsystemBase {
 
   public enum WinchStates {
     Idle,
-    ManualControl
+    ManualControl,
+    Zeroing,
+    TestPID
   }
 
+  private static PIDController PID;
+
+  private double PIDVoltage = 0.0;
   public WinchStates wantedState = WinchStates.Idle;
 
   public ArmWinch(ArmWinchIO io) {
     this.io = io;
+    PID =
+        new PIDController(
+            ArmWinchConstants.ControlConstants.kP,
+            ArmWinchConstants.ControlConstants.kI,
+            ArmWinchConstants.ControlConstants.kD);
   }
 
   @Override
@@ -46,12 +57,25 @@ public class ArmWinch extends SubsystemBase {
           } else {
             wantedState = WinchStates.Idle;
           }
+          break;
+        case Zeroing:
+          if (inputs.armMotorCurrent > 20) {
+            wantedState = WinchStates.Idle;
+            io.zeroEncoder();
+          } else {
+            io.setSpeed(-0.3);
+          }
+          break;
+        case TestPID:
+          PIDVoltage = PID.calculate(getPosition(), 360);
+          io.setVoltage(PIDVoltage);
         default:
           break;
       }
     } else {
       wantedState = WinchStates.Idle;
     }
+    Logger.recordOutput("Arm Winch/PID Voltage", PIDVoltage);
     // This method will be called once per scheduler run
   }
 

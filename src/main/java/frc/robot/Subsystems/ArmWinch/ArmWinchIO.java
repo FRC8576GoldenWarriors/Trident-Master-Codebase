@@ -16,4 +16,6 @@ public interface ArmWinchIO {
   default void setVoltage(double voltage) {}
 
   default void setSpeed(double speed) {}
+
+  default void zeroEncoder() {}
 }
