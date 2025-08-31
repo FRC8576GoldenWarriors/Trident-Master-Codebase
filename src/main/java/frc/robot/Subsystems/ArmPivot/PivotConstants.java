@@ -12,16 +12,16 @@ public class PivotConstants {
   }
 
   public class ControlConstants {
-    public static double kP = 0.0;
+    public static double kP = 512.0;//256.0
     public static double kI = 0.0;
     public static double kD = 0.0;
 
-    public static double kS = 0.0;
+    public static double kS = 0.02;
     public static double kV = 0.0;
-    public static double kG = 0.0;
+    public static double kG = 0.4;
     public static double kA = 0.0;
 
-    public static double frontL1 = 0.0;
+    public static double frontL1 = 0.1;
     public static double frontL2 = 0.0;
     public static double frontL3 = 0.0;
     public static double frontL4 = 0.0;

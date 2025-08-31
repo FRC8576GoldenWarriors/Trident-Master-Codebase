@@ -80,7 +80,7 @@ public class ArmWinch extends SubsystemBase {
           }
           break;
         case Zeroing:
-          if (inputs.armMotorCurrent > 22.5) {
+          if (inputs.armMotorCurrent > 22) {//22.5
             io.zeroEncoder();
             wantedState = WinchStates.Holding;
           } else {

@@ -6,6 +6,8 @@ package frc.robot.Subsystems.ArmPivot;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
@@ -17,7 +19,7 @@ public class Pivot extends SubsystemBase {
 
   private PivotIOInputsAutoLogged inputs = new PivotIOInputsAutoLogged();
 
-  private PIDController PID;
+  private ProfiledPIDController PID;
   private ArmFeedforward FF;
 
   private double PIDVoltage;
@@ -48,10 +50,12 @@ public class Pivot extends SubsystemBase {
   public Pivot(PivotIO io) {
     this.io = io;
     PID =
-        new PIDController(
+        new ProfiledPIDController(
             PivotConstants.ControlConstants.kP,
             PivotConstants.ControlConstants.kI,
-            PivotConstants.ControlConstants.kD);
+            PivotConstants.ControlConstants.kD,
+            new Constraints(1.5, 2.0));
+      PID.setTolerance(0.03);
     FF =
         new ArmFeedforward(
             PivotConstants.ControlConstants.kS,
@@ -87,7 +91,7 @@ public class Pivot extends SubsystemBase {
           PIDVoltage =
               PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.frontL1);
           FFVoltage =
-              FF.calculate(
+              -FF.calculate(
                   (PivotConstants.ControlConstants.frontL1
                           + PivotConstants.ControlConstants.COMOffset)
                       * Math.PI
@@ -263,6 +267,7 @@ public class Pivot extends SubsystemBase {
     } else {
       wantedPosition = PivotPositions.Idle;
     }
+    Logger.recordOutput("Arm Pivot/Input Voltage", inputVoltage);
     // This method will be called once per scheduler run
   }
 

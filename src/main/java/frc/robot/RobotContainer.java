@@ -55,8 +55,7 @@ public class RobotContainer {
     //driverController.x().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.RollerVoltageControl),endEffector));
     driverController.povLeft().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.RollerVoltageControl),endEffector));
     driverController.povRight().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.RollerVoltageControl),endEffector));
-    driverController.leftBumper().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.PivotVoltageControl),endEffector));
-    driverController.rightBumper().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.PivotVoltageControl),endEffector));
+    driverController.rightBumper().onTrue(new InstantCommand(()->armPivot.setPivotPosition(PivotPositions.FrontL1),armPivot));
   }
 
   public Command getAutonomousCommand() {
