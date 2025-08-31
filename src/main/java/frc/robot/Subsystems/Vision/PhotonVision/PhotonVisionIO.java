@@ -39,7 +39,7 @@ public class PhotonVisionIO implements PhotonVisionLoggedIO {
 
           inputs.objectIDOfTargets = new int[targets.size()];
           inputs.yawOfTargets = new double[targets.size()];
-          inputs.picthOfTargets = new double[targets.size()];
+          inputs.pitchOfTargets = new double[targets.size()];
           inputs.skewOfTargets = new double[targets.size()];
           inputs.areaOfTargets = new double[targets.size()];
           inputs.ambiguityOfTargets = new double[targets.size()];
@@ -50,7 +50,7 @@ public class PhotonVisionIO implements PhotonVisionLoggedIO {
           for (int i = 0; i < targets.size(); i++) {
             inputs.objectIDOfTargets[i] = targets.get(i).getDetectedObjectClassID();
             inputs.yawOfTargets[i] = targets.get(i).getYaw();
-            inputs.picthOfTargets[i] = targets.get(i).getPitch();
+            inputs.pitchOfTargets[i] = targets.get(i).getPitch();
             inputs.skewOfTargets[i] = targets.get(i).getSkew();
             inputs.areaOfTargets[i] = targets.get(i).getArea();
             inputs.ambiguityOfTargets[i] = targets.get(i).getDetectedObjectConfidence();

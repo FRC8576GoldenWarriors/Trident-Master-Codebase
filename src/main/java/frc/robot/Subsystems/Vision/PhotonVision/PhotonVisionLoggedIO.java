@@ -22,7 +22,7 @@ interface PhotonVisionLoggedIO {
     int[] objectIDOfTargets = new int[0];
 
     double[] yawOfTargets = new double[0];
-    double[] picthOfTargets = new double[0];
+    double[] pitchOfTargets = new double[0];
     double[] skewOfTargets = new double[0];
     double[] areaOfTargets = new double[0];
     double[] ambiguityOfTargets = new double[0];

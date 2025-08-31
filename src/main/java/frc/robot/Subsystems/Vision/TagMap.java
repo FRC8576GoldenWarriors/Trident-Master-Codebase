@@ -39,7 +39,7 @@ public class TagMap {
     REEF,
     BARGE,
     CORAL,
-    PROCCESSOR
+    PROCESSOR
   }
 
   public TagMap(AprilTagFields field, Tags tagEnum) {
@@ -79,7 +79,7 @@ public class TagMap {
                     })
                 .toList();
         break;
-      case PROCCESSOR:
+      case PROCESSOR:
         tags =
             tags.stream()
                 .filter(

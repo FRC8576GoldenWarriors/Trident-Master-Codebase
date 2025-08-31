@@ -83,9 +83,9 @@ public class ObjectRectangle {
 
   public double[] toNumberArray() {
     double[] arr = new double[corners.size() * 2];
-    for (int i = 0; i < corners.size() * 2; i += 2) {
-      arr[i / 2] = corners.get(i).getXCoord();
-      arr[(i / 2) + 1] = corners.get(i).getYCoord();
+    for (int i = 0, j = 0; i < corners.size(); i++, j += 2) {
+      arr[j] = corners.get(i).getXCoord();
+      arr[j + 1] = corners.get(i).getYCoord();
     }
     return arr;
   }

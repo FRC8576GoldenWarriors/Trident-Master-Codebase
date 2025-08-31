@@ -126,7 +126,7 @@ public class PhotonVision extends SubsystemBase {
     List<Double> parallelDistances = new ArrayList<>();
 
     var distances = this.getDistancesToTargetsUsingHeight(cameraName);
-    var pitches = this.getInputsFromPhotonVisionName(cameraName).picthOfTargets;
+    var pitches = this.getInputsFromPhotonVisionName(cameraName).pitchOfTargets;
 
     for (int i = 0; i < distances.size(); i++) {
       parallelDistances.add(
