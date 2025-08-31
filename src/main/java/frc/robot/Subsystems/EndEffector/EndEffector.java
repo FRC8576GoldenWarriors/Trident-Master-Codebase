@@ -38,10 +38,10 @@ public class EndEffector extends SubsystemBase {
           io.setRollerVoltages(0, 0);
           break;
         case RollerVoltageControl:
-          if (RobotContainer.driverController.x().getAsBoolean()) {
-            io.setRollerSpeeds(0.3, 0.3);
-          } else if (RobotContainer.driverController.a().getAsBoolean()) {
-            io.setRollerSpeeds(-.3, -.3);
+          if (RobotContainer.driverController.povRight().getAsBoolean()) {
+            io.setRollerSpeeds(0.6, 0.6);
+          } else if (RobotContainer.driverController.povLeft().getAsBoolean()) {
+            io.setRollerSpeeds(-.6, -.6);
           } else {
             wantedState = EndEffectorState.Idle;
           }

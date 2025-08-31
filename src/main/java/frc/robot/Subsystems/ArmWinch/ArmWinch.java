@@ -4,11 +4,22 @@
 
 package frc.robot.Subsystems.ArmWinch;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.units.UnitBuilder;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
+
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.derive;
+
 import org.littletonrobotics.junction.Logger;
 
 public class ArmWinch extends SubsystemBase {
@@ -19,12 +30,14 @@ public class ArmWinch extends SubsystemBase {
 
   public enum WinchStates {
     Idle,
+    Holding,
     ManualControl,
     Zeroing,
     TestPID
   }
 
-  private static PIDController PID;
+  private ProfiledPIDController PID;
+  private ArmFeedforward FF;
 
   private double PIDVoltage = 0.0;
   public WinchStates wantedState = WinchStates.Idle;
@@ -32,10 +45,14 @@ public class ArmWinch extends SubsystemBase {
   public ArmWinch(ArmWinchIO io) {
     this.io = io;
     PID =
-        new PIDController(
+        new ProfiledPIDController(
             ArmWinchConstants.ControlConstants.kP,
             ArmWinchConstants.ControlConstants.kI,
-            ArmWinchConstants.ControlConstants.kD);
+            ArmWinchConstants.ControlConstants.kD,
+            new Constraints(ArmWinchConstants.ControlConstants.maxVelocity, ArmWinchConstants.ControlConstants.maxAcceleration));
+
+    PID.setTolerance(30,300);
+    FF = new ArmFeedforward(0.0, ArmWinchConstants.ControlConstants.kG, 0.0);
   }
 
   @Override
@@ -49,6 +66,10 @@ public class ArmWinch extends SubsystemBase {
         case Idle:
           io.setVoltage(0);
           break;
+        case Holding:
+          PIDVoltage = PID.calculate(getPosition(),new TrapezoidProfile.State(100, 0.0));
+          io.setVoltage(PIDVoltage);
+          break;
         case ManualControl:
           if (RobotContainer.driverController.a().getAsBoolean()) {
             io.setSpeed(0.3);
@@ -59,16 +80,17 @@ public class ArmWinch extends SubsystemBase {
           }
           break;
         case Zeroing:
-          if (inputs.armMotorCurrent > 20) {
-            wantedState = WinchStates.Idle;
+          if (inputs.armMotorCurrent > 22.5) {
             io.zeroEncoder();
+            wantedState = WinchStates.Holding;
           } else {
             io.setSpeed(-0.3);
           }
           break;
         case TestPID:
-          PIDVoltage = PID.calculate(getPosition(), 360);
+          PIDVoltage = PID.calculate(getPosition(), new TrapezoidProfile.State(360, 0.0));
           io.setVoltage(PIDVoltage);
+          break;
         default:
           break;
       }
@@ -76,6 +98,8 @@ public class ArmWinch extends SubsystemBase {
       wantedState = WinchStates.Idle;
     }
     Logger.recordOutput("Arm Winch/PID Voltage", PIDVoltage);
+    Logger.recordOutput("Arm Winch/Wanted State", wantedState);
+    
     // This method will be called once per scheduler run
   }
 

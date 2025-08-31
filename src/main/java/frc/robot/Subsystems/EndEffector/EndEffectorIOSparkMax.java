@@ -31,9 +31,9 @@ public class EndEffectorIOSparkMax implements EndEffectorIO {
             EndEffectorConstants.HardwareConstants.topRollerCurrentLimit);
     pivotMotor =
         new WarriorSparkMax(
-            EndEffectorConstants.HardwareConstants.sideRollerID,
+            EndEffectorConstants.HardwareConstants.pivotMotorID,
             MotorType.kBrushless,
-            EndEffectorConstants.HardwareConstants.sideRollerInverted,
+            EndEffectorConstants.HardwareConstants.pivotMotorInverted,
             IdleMode.kBrake,
             EndEffectorConstants.HardwareConstants.pivotMotorCurrentLimit);
 

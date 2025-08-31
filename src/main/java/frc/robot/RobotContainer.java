@@ -19,6 +19,9 @@ import frc.robot.Subsystems.ArmPivot.Pivot.PivotPositions;
 import frc.robot.Subsystems.ArmWinch.ArmWinch;
 import frc.robot.Subsystems.ArmWinch.ArmWinchIOSparkMax;
 import frc.robot.Subsystems.ArmWinch.ArmWinch.WinchStates;
+import frc.robot.Subsystems.EndEffector.EndEffector;
+import frc.robot.Subsystems.EndEffector.EndEffectorIOSparkMax;
+import frc.robot.Subsystems.EndEffector.EndEffector.EndEffectorState;
 import frc.robot.Subsystems.SwerveDrive.Drivetrain;
 
 public class RobotContainer {
@@ -27,6 +30,7 @@ public class RobotContainer {
       new CommandXboxController(0);
   public static final Pivot armPivot = new Pivot(new PivotIOSparkMax());
   public static final ArmWinch armWinch = new ArmWinch(new ArmWinchIOSparkMax());
+  public static final EndEffector endEffector = new EndEffector(new EndEffectorIOSparkMax());
   public final JoystickButton resetHeading_Start =
       new JoystickButton(driverController.getHID(), XboxController.Button.kStart.value);
   public final SendableChooser<Command> autoChooser;
@@ -45,7 +49,14 @@ public class RobotContainer {
 
     driverController.y().whileTrue(new InstantCommand(()->armWinch.setWantedState(WinchStates.ManualControl),armWinch));
     driverController.a().whileTrue(new InstantCommand(()->armWinch.setWantedState(WinchStates.ManualControl),armWinch));
+    
     driverController.b().onTrue(new InstantCommand(()->armWinch.setWantedState(WinchStates.TestPID),armWinch));
+    //driverController.a().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.RollerVoltageControl),endEffector));
+    //driverController.x().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.RollerVoltageControl),endEffector));
+    driverController.povLeft().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.RollerVoltageControl),endEffector));
+    driverController.povRight().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.RollerVoltageControl),endEffector));
+    driverController.leftBumper().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.PivotVoltageControl),endEffector));
+    driverController.rightBumper().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.PivotVoltageControl),endEffector));
   }
 
   public Command getAutonomousCommand() {
