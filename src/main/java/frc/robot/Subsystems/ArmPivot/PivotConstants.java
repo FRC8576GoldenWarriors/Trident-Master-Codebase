@@ -8,20 +8,20 @@ public class PivotConstants {
     public static boolean thruBoreInverted = true;
     public static double thruBoreExpectedZero = -1.33;
     public static double thruBoreFullRange = 1.0;
-    public static int currentLimit = 20;
+    public static int currentLimit = 25;//20;
   }
 
   public class ControlConstants {
-    public static double kP = 512.0;//256.0
+    public static double kP = 160;//128;//256;//512.0; // 256.0
     public static double kI = 0.0;
     public static double kD = 0.0;
 
-    public static double kS = 0.02;
+    public static double kS = 0.0;//0.02;
     public static double kV = 0.0;
     public static double kG = 0.4;
     public static double kA = 0.0;
 
-    public static double frontL1 = 0.1;
+    public static double frontL1 = 0.2;
     public static double frontL2 = 0.0;
     public static double frontL3 = 0.0;
     public static double frontL4 = 0.0;
@@ -31,7 +31,7 @@ public class PivotConstants {
     public static double backL3 = 0.0;
     public static double backL4 = 0.0;
 
-    public static double groundIntake = 0.0;
+    public static double groundIntake = 0.0375;
     public static double stationIntake = 0.0;
 
     public static double setClimb = 0.0;

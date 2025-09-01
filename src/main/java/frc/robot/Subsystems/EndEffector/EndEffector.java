@@ -39,9 +39,9 @@ public class EndEffector extends SubsystemBase {
           break;
         case RollerVoltageControl:
           if (RobotContainer.driverController.povRight().getAsBoolean()) {
-            io.setRollerSpeeds(0.6, 0.6);
+            io.setRollerSpeeds(0.3, 0.1);
           } else if (RobotContainer.driverController.povLeft().getAsBoolean()) {
-            io.setRollerSpeeds(-.6, -.6);
+            io.setRollerSpeeds(-.3, -0.1);
           } else {
             wantedState = EndEffectorState.Idle;
           }
@@ -49,7 +49,7 @@ public class EndEffector extends SubsystemBase {
         case PivotVoltageControl:
           if (RobotContainer.driverController.leftBumper().getAsBoolean()) {
             io.setPivotSpeed(-0.3);
-          } else if (RobotContainer.driverController.rightBumper().getAsBoolean()) {
+          } else if (RobotContainer.driverController.leftTrigger().getAsBoolean()) {
             io.setPivotSpeed(0.3);
           } else {
             wantedState = EndEffectorState.Idle;

@@ -12,6 +12,7 @@ public interface PivotIO {
     public double motorCurrent = 0.0;
     public double thruBorePosition = 0.0;
     public boolean thruBoreConnected = false;
+    public double thruBoreVelocity = 0.0;
   }
 
   default void setVoltage(double voltage) {}

@@ -5,12 +5,17 @@
 package frc.robot.Subsystems.ArmPivot;
 
 import edu.wpi.first.math.controller.ArmFeedforward;
-import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.units.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotContainer;
+import frc.robot.Subsystems.ArmPivot.Pivot.PivotPositions;
+
 import org.littletonrobotics.junction.Logger;
 
 public class Pivot extends SubsystemBase {
@@ -25,6 +30,11 @@ public class Pivot extends SubsystemBase {
   private double PIDVoltage;
   private double FFVoltage;
   private double inputVoltage = 0.0;
+
+  private SysIdRoutine routine = new SysIdRoutine(new SysIdRoutine.Config(
+  null,null,null,
+  (state)->Logger.recordOutput("SysIdState",state.toString())
+), new SysIdRoutine.Mechanism((voltage)->io.setVoltage(voltage.in(Units.Volts)), null, this));
 
   public enum PivotPositions {
     Idle,
@@ -55,7 +65,7 @@ public class Pivot extends SubsystemBase {
             PivotConstants.ControlConstants.kI,
             PivotConstants.ControlConstants.kD,
             new Constraints(1.5, 2.0));
-      PID.setTolerance(0.03);
+    PID.setTolerance(0.03);
     FF =
         new ArmFeedforward(
             PivotConstants.ControlConstants.kS,
@@ -249,6 +259,7 @@ public class Pivot extends SubsystemBase {
                       * Math.PI
                       * 2,
                   0.5);
+          
           inputVoltage = PIDVoltage + FFVoltage;
           io.setVoltage(inputVoltage);
           break;
@@ -268,6 +279,7 @@ public class Pivot extends SubsystemBase {
       wantedPosition = PivotPositions.Idle;
     }
     Logger.recordOutput("Arm Pivot/Input Voltage", inputVoltage);
+    Logger.recordOutput("Arm Pivot/PID At Goal", PID.atGoal());
     // This method will be called once per scheduler run
   }
 
@@ -282,4 +294,15 @@ public class Pivot extends SubsystemBase {
   public PivotPositions getPosition() {
     return wantedPosition;
   }
+
+  public Command qualitisticRoutine(Direction direction){
+    if(direction.equals(Direction.kForward))
+      return routine.quasistatic(direction).until(()->getThruBorePosition()>.3);
+    return routine.quasistatic(direction);
+  }
+  public Command dynamicRoutine(Direction direction){
+    if(direction.equals(Direction.kForward))
+      return routine.dynamic(direction).until(()->getThruBorePosition()>.3);
+    return routine.dynamic(direction);
+}
 }

@@ -30,7 +30,7 @@ public class ArmWinchIOSparkMax implements ArmWinchIO {
     inputs.armMotorVoltage = winchMax.getAppliedOutput();
     inputs.armMotorCurrent = winchMax.getOutputCurrent();
     inputs.thruBorePosition = absEncoder.getDistance() / 2048;
-    inputs.thruBoreVelocity = absEncoder.getRate();
+    //inputs.thruBoreVelocity = absEncoder.getRate()/2048;
   }
 
   @Override
