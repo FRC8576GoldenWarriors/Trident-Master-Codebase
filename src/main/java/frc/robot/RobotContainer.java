@@ -56,9 +56,12 @@ public class RobotContainer {
     // driverController.x().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.RollerVoltageControl),endEffector));
     driverController.povLeft().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.RollerVoltageControl),endEffector));
     driverController.povRight().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.RollerVoltageControl),endEffector));
-    driverController.rightBumper().onTrue(new InstantCommand(()->armPivot.setPivotPosition(PivotPositions.FrontL1),armPivot));
+    driverController.rightBumper().onTrue(new InstantCommand(()->armPivot.setPivotPosition(PivotPositions.GroundIntake),armPivot));
     driverController.rightTrigger().onTrue(new InstantCommand(()->armWinch.zeroEncoder()));
-
+    //driverController.rightTrigger().onTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.L4),endEffector));
+    driverController.leftTrigger().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.PivotVoltageControl),endEffector));
+    
+    driverController.leftBumper().whileTrue(new InstantCommand(()->armPivot.setPivotPosition(PivotPositions.FrontL1),armPivot));
     // driverController.povUp().whileTrue(new InstantCommand(()->armPivot.qualitisticRoutine(Direction.kForward),armPivot));
     // driverController.povRight().whileTrue(new InstantCommand(()->armPivot.qualitisticRoutine(Direction.kReverse),armPivot));
     // driverController.povLeft().whileTrue(new InstantCommand(()->armPivot.dynamicRoutine(Direction.kForward),armPivot));

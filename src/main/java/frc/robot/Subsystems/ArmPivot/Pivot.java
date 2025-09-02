@@ -88,7 +88,7 @@ public class Pivot extends SubsystemBase {
           PIDVoltage =
               PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.startPosition);
           FFVoltage =
-              FF.calculate(
+              -FF.calculate(
                   (PivotConstants.ControlConstants.startPosition
                           + PivotConstants.ControlConstants.COMOffset)
                       * Math.PI
@@ -114,7 +114,7 @@ public class Pivot extends SubsystemBase {
           PIDVoltage =
               PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.frontL2);
           FFVoltage =
-              FF.calculate(
+              -FF.calculate(
                   (PivotConstants.ControlConstants.frontL2
                           + PivotConstants.ControlConstants.COMOffset)
                       * Math.PI
@@ -127,7 +127,7 @@ public class Pivot extends SubsystemBase {
           PIDVoltage =
               PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.frontL3);
           FFVoltage =
-              FF.calculate(
+              -FF.calculate(
                   (PivotConstants.ControlConstants.frontL3
                           + PivotConstants.ControlConstants.COMOffset)
                       * Math.PI
@@ -140,7 +140,7 @@ public class Pivot extends SubsystemBase {
           PIDVoltage =
               PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.frontL4);
           FFVoltage =
-              FF.calculate(
+              -FF.calculate(
                   (PivotConstants.ControlConstants.frontL4
                           + PivotConstants.ControlConstants.COMOffset)
                       * Math.PI
@@ -152,7 +152,7 @@ public class Pivot extends SubsystemBase {
         case BackL1:
           PIDVoltage = PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.backL1);
           FFVoltage =
-              FF.calculate(
+              -FF.calculate(
                   (PivotConstants.ControlConstants.backL1
                           + PivotConstants.ControlConstants.COMOffset)
                       * Math.PI
@@ -164,7 +164,7 @@ public class Pivot extends SubsystemBase {
         case BackL2:
           PIDVoltage = PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.backL2);
           FFVoltage =
-              FF.calculate(
+              -FF.calculate(
                   (PivotConstants.ControlConstants.backL2
                           + PivotConstants.ControlConstants.COMOffset)
                       * Math.PI
@@ -176,7 +176,7 @@ public class Pivot extends SubsystemBase {
         case BackL3:
           PIDVoltage = PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.backL3);
           FFVoltage =
-              FF.calculate(
+              -FF.calculate(
                   (PivotConstants.ControlConstants.backL3
                           + PivotConstants.ControlConstants.COMOffset)
                       * Math.PI
@@ -188,7 +188,7 @@ public class Pivot extends SubsystemBase {
         case BackL4:
           PIDVoltage = PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.backL4);
           FFVoltage =
-              FF.calculate(
+              -FF.calculate(
                   (PivotConstants.ControlConstants.backL4
                           + PivotConstants.ControlConstants.COMOffset)
                       * Math.PI
@@ -201,7 +201,7 @@ public class Pivot extends SubsystemBase {
           PIDVoltage =
               PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.groundIntake);
           FFVoltage =
-              FF.calculate(
+              -FF.calculate(
                   (PivotConstants.ControlConstants.groundIntake
                           + PivotConstants.ControlConstants.COMOffset)
                       * Math.PI
@@ -214,7 +214,7 @@ public class Pivot extends SubsystemBase {
           PIDVoltage =
               PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.stationIntake);
           FFVoltage =
-              FF.calculate(
+              -FF.calculate(
                   (PivotConstants.ControlConstants.stationIntake
                           + PivotConstants.ControlConstants.COMOffset)
                       * Math.PI
@@ -227,7 +227,7 @@ public class Pivot extends SubsystemBase {
           PIDVoltage =
               PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.setClimb);
           FFVoltage =
-              FF.calculate(
+              -FF.calculate(
                   (PivotConstants.ControlConstants.setClimb
                           + PivotConstants.ControlConstants.COMOffset)
                       * Math.PI
@@ -240,7 +240,7 @@ public class Pivot extends SubsystemBase {
           PIDVoltage =
               PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.climbUp);
           FFVoltage =
-              FF.calculate(
+              -FF.calculate(
                   (PivotConstants.ControlConstants.climbUp
                           + PivotConstants.ControlConstants.COMOffset)
                       * Math.PI
@@ -253,7 +253,7 @@ public class Pivot extends SubsystemBase {
           PIDVoltage =
               PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.climbDown);
           FFVoltage =
-              FF.calculate(
+              -FF.calculate(
                   (PivotConstants.ControlConstants.climbDown
                           + PivotConstants.ControlConstants.COMOffset)
                       * Math.PI
@@ -284,6 +284,7 @@ public class Pivot extends SubsystemBase {
   }
 
   public void setPivotPosition(PivotPositions wantedPosition) {
+    PID.reset(getThruBorePosition());
     this.wantedPosition = wantedPosition;
   }
 

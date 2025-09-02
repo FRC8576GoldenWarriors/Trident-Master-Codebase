@@ -81,8 +81,8 @@ public class ArmWinch extends SubsystemBase {
           }
           break;
         case TestPID:
-        if(Math.abs(getPosition()-2000)<100){
-          PID.setP(0.5);
+        if(Math.abs(getPosition()-2000)<100||getPosition()>2000){
+          PID.setP(0.2);
         }
           PIDVoltage = PID.calculate(getPosition(), new TrapezoidProfile.State(2000, 0.0));
           io.setVoltage(PIDVoltage);
@@ -101,6 +101,7 @@ public class ArmWinch extends SubsystemBase {
   }
 
   public void setWantedState(WinchStates wantedState) {
+    PID.reset(getPosition());
     this.wantedState = wantedState;
   }
 

@@ -31,7 +31,7 @@ public class PivotConstants {
     public static double backL3 = 0.0;
     public static double backL4 = 0.0;
 
-    public static double groundIntake = 0.0375;
+    public static double groundIntake = 0.04;
     public static double stationIntake = 0.0;
 
     public static double setClimb = 0.0;
@@ -39,6 +39,6 @@ public class PivotConstants {
     public static double climbDown = 0.0;
 
     public static double startPosition = 0.0;
-    public static double COMOffset = 0.3976;
+    public static double COMOffset = 0.3976;//IN ROTATIONS
   }
 }

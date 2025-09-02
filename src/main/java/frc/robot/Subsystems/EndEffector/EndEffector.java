@@ -4,6 +4,9 @@
 
 package frc.robot.Subsystems.EndEffector;
 
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
@@ -18,12 +21,22 @@ public class EndEffector extends SubsystemBase {
   public enum EndEffectorState {
     Idle,
     RollerVoltageControl,
-    PivotVoltageControl
+    PivotVoltageControl,
+    GroundIntake,
+    L4
   }
 
   private EndEffectorState wantedState;
 
+  private ProfiledPIDController PID;
+  private ArmFeedforward FF;
+
+  private double PIDVoltage;
+  private double FFVoltage;
+  private double inputVoltage = 0.0;
   public EndEffector(EndEffectorIO io) {
+    PID = new ProfiledPIDController(EndEffectorConstants.ControlConstants.kP, EndEffectorConstants.ControlConstants.kI, EndEffectorConstants.ControlConstants.kD, new Constraints(0.5, 0.75));
+    FF = new ArmFeedforward(EndEffectorConstants.ControlConstants.kS, EndEffectorConstants.ControlConstants.kG, EndEffectorConstants.ControlConstants.kV,EndEffectorConstants.ControlConstants.kA);
     this.io = io;
   }
 
@@ -48,24 +61,42 @@ public class EndEffector extends SubsystemBase {
           break;
         case PivotVoltageControl:
           if (RobotContainer.driverController.leftBumper().getAsBoolean()) {
-            io.setPivotSpeed(-0.3);
+            io.setPivotSpeed(-1);
           } else if (RobotContainer.driverController.leftTrigger().getAsBoolean()) {
-            io.setPivotSpeed(0.3);
+            io.setPivotSpeed(1);
           } else {
             wantedState = EndEffectorState.Idle;
           }
           break;
-
+        case GroundIntake:
+          PIDVoltage = PID.calculate(getPosition(),EndEffectorConstants.ControlConstants.groundIntakePosition);
+          FFVoltage = -FF.calculate(EndEffectorConstants.ControlConstants.groundIntakePosition*2*Math.PI,0.5);
+          inputVoltage = PIDVoltage+FFVoltage;
+          io.setPivotVoltage(inputVoltage);
+          break;
+        case L4:
+          PIDVoltage = PID.calculate(getPosition(),EndEffectorConstants.ControlConstants.l4Position);
+          FFVoltage = -FF.calculate((EndEffectorConstants.ControlConstants.l4Position+EndEffectorConstants.ControlConstants.COMOffset)*2*Math.PI,0.5);
+          inputVoltage = PIDVoltage+FFVoltage;
+          io.setPivotVoltage(inputVoltage);
+          break;
         default:
           break;
       }
     } else {
       wantedState = EndEffectorState.Idle;
     }
+    Logger.recordOutput("End Effector/PID Voltage", PIDVoltage);
+    Logger.recordOutput("End Effector/FF Voltage", FFVoltage);
+    Logger.recordOutput("End Effector/Input Voltage", inputVoltage);
     // This method will be called once per scheduler run
   }
 
   public void setWantedState(EndEffectorState wantedState) {
+    PID.reset(getPosition());
     this.wantedState = wantedState;
+  }
+  public double getPosition(){
+    return inputs.thruBorePosition;
   }
 }
