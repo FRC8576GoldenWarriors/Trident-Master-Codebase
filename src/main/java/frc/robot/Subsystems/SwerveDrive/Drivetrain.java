@@ -513,8 +513,10 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void resetPose2d(Pose2d pose) {
-    gyro.setYaw(pose.getRotation().getDegrees());
-    odometry.resetPosition(pose.getRotation(), getModulePositions(), pose);
+    double gyroRotation =
+        isRedAlliance() ? pose.getRotation().getDegrees() + 180 : pose.getRotation().getDegrees();
+    gyro.setYaw(gyroRotation);
+    odometry.resetPosition(Rotation2d.fromDegrees(gyroRotation), getModulePositions(), pose);
   }
 
   public double getRate() {
@@ -526,6 +528,7 @@ public class Drivetrain extends SubsystemBase {
   }
 
   public void driveRobotRelative(ChassisSpeeds chassisSpeeds) {
+
     SwerveModuleState[] moduleStates =
         SwerveConstants.DRIVE_KINEMATICS.toSwerveModuleStates(chassisSpeeds);
     setModuleStates(moduleStates);

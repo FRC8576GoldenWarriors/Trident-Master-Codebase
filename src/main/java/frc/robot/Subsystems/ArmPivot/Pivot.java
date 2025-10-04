@@ -15,8 +15,8 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.RobotContainer;
 import frc.robot.Subsystems.ArmPivot.Pivot.PivotPositions;
-
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Pivot extends SubsystemBase {
   /** Creates a new Pivot. */
@@ -30,11 +30,15 @@ public class Pivot extends SubsystemBase {
   private double PIDVoltage;
   private double FFVoltage;
   private double inputVoltage = 0.0;
-
-  private SysIdRoutine routine = new SysIdRoutine(new SysIdRoutine.Config(
-  null,null,null,
-  (state)->Logger.recordOutput("SysIdState",state.toString())
-), new SysIdRoutine.Mechanism((voltage)->io.setVoltage(voltage.in(Units.Volts)), null, this));
+  private LoggedNetworkNumber kPLoggedNetworkNumber = new LoggedNetworkNumber("/Tuning/Arm Pivot kP", PivotConstants.ControlConstants.kP);
+  private double kP = kPLoggedNetworkNumber.get();
+//256
+  private SysIdRoutine routine =
+      new SysIdRoutine(
+          new SysIdRoutine.Config(
+              null, null, null, (state) -> Logger.recordOutput("SysIdState", state.toString())),
+          new SysIdRoutine.Mechanism(
+              (voltage) -> io.setVoltage(voltage.in(Units.Volts)), null, this));
 
   public enum PivotPositions {
     Idle,
@@ -78,7 +82,10 @@ public class Pivot extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Arm Pivot", inputs);
+    kP = kPLoggedNetworkNumber.get();
+    PID.setP(kP);
     Logger.recordOutput("Arm Pivot/Position", getThruBorePosition());
+    Logger.recordOutput("Arm Pivot/kP", PID.getP());
     if (DriverStation.isEnabled()) {
       switch (wantedPosition) {
         case Idle:
@@ -259,17 +266,17 @@ public class Pivot extends SubsystemBase {
                       * Math.PI
                       * 2,
                   0.5);
-          
+
           inputVoltage = PIDVoltage + FFVoltage;
           io.setVoltage(inputVoltage);
           break;
         case ManualControl:
           if (RobotContainer.driverController.povUp().getAsBoolean()) {
-            io.setSpeed(0.5);
+            io.setSpeed(0.05);
           } else if (RobotContainer.driverController.povDown().getAsBoolean()) {
-            io.setSpeed(-0.5);
+            io.setSpeed(-0.05);
           } else {
-            wantedPosition = PivotPositions.Rest;
+            wantedPosition = PivotPositions.Idle;
           }
           break;
         default:
@@ -280,6 +287,7 @@ public class Pivot extends SubsystemBase {
     }
     Logger.recordOutput("Arm Pivot/Input Voltage", inputVoltage);
     Logger.recordOutput("Arm Pivot/PID At Goal", PID.atGoal());
+    Logger.recordOutput("Arm Pivot/Pivot Position",wantedPosition);
     // This method will be called once per scheduler run
   }
 
@@ -296,14 +304,15 @@ public class Pivot extends SubsystemBase {
     return wantedPosition;
   }
 
-  public Command qualitisticRoutine(Direction direction){
-    if(direction.equals(Direction.kForward))
-      return routine.quasistatic(direction).until(()->getThruBorePosition()>.3);
+  public Command qualitisticRoutine(Direction direction) {
+    if (direction.equals(Direction.kForward))
+      return routine.quasistatic(direction).until(() -> getThruBorePosition() > .3);
     return routine.quasistatic(direction);
   }
-  public Command dynamicRoutine(Direction direction){
-    if(direction.equals(Direction.kForward))
-      return routine.dynamic(direction).until(()->getThruBorePosition()>.3);
+
+  public Command dynamicRoutine(Direction direction) {
+    if (direction.equals(Direction.kForward))
+      return routine.dynamic(direction).until(() -> getThruBorePosition() > .3);
     return routine.dynamic(direction);
-}
+  }
 }

@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.wpilibj.XboxController;
@@ -35,6 +37,7 @@ public class RobotContainer {
   public final JoystickButton resetHeading_Start =
       new JoystickButton(driverController.getHID(), XboxController.Button.kStart.value);
   public final SendableChooser<Command> autoChooser;
+
   public RobotContainer() {
     m_Drivetrain = Drivetrain.getInstance();
     m_Drivetrain.setDefaultCommand(new SwerveDrive());
@@ -54,14 +57,21 @@ public class RobotContainer {
     driverController.b().onTrue(new InstantCommand(()->armWinch.setWantedState(WinchStates.TestPID),armWinch));
     // //driverController.a().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.RollerVoltageControl),endEffector));
     // driverController.x().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.RollerVoltageControl),endEffector));
-    driverController.povLeft().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.RollerVoltageControl),endEffector));
-    driverController.povRight().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.RollerVoltageControl),endEffector));
-    driverController.rightBumper().onTrue(new InstantCommand(()->armPivot.setPivotPosition(PivotPositions.GroundIntake),armPivot));
+    // driverController.povLeft().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.RollerVoltageControl),endEffector));
+    // driverController.povRight().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.RollerVoltageControl),endEffector));
+    //driverController.rightBumper().onTrue(new InstantCommand(()->armPivot.setPivotPosition(PivotPositions.GroundIntake),armPivot));
+    driverController.rightBumper().onTrue(new InstantCommand(()->armPivot.setPivotPosition(PivotPositions.FrontL1)));
     driverController.rightTrigger().onTrue(new InstantCommand(()->armWinch.zeroEncoder()));
     //driverController.rightTrigger().onTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.L4),endEffector));
-    driverController.leftTrigger().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.PivotVoltageControl),endEffector));
+    //driverController.leftTrigger().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.PivotVoltageControl),endEffector));
+    //driverController.leftBumper().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.PivotVoltageControl),endEffector));
     
-    driverController.leftBumper().whileTrue(new InstantCommand(()->armPivot.setPivotPosition(PivotPositions.FrontL1),armPivot));
+    driverController.leftBumper().onTrue(new InstantCommand(()->armPivot.setPivotPosition(PivotPositions.GroundIntake),armPivot));
+    driverController.povUp().whileTrue(new InstantCommand(()->armPivot.setPivotPosition(PivotPositions.ManualControl),armPivot));
+    
+    driverController.povDown().whileTrue(new InstantCommand(()->armPivot.setPivotPosition(PivotPositions.ManualControl),armPivot));
+    driverController.povRight().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.RollerVoltageControl),endEffector));
+    driverController.povLeft().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.RollerVoltageControl),endEffector));
     // driverController.povUp().whileTrue(new InstantCommand(()->armPivot.qualitisticRoutine(Direction.kForward),armPivot));
     // driverController.povRight().whileTrue(new InstantCommand(()->armPivot.qualitisticRoutine(Direction.kReverse),armPivot));
     // driverController.povLeft().whileTrue(new InstantCommand(()->armPivot.dynamicRoutine(Direction.kForward),armPivot));

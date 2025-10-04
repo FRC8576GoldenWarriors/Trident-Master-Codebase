@@ -22,9 +22,9 @@ public interface EndEffectorIO {
     public boolean thruBoreConnected = false;
   }
 
-  default void setRollerVoltages(double topRollerVoltage, double sideRollerVoltage) {}
+  default void setRollerVoltages(double sideRollerVoltage) {}
 
-  default void setRollerSpeeds(double topRollerSpeed, double sideRollerSpeed) {}
+  default void setRollerSpeeds(double sideRollerSpeed) {}
 
   default void setPivotVoltage(double pivotVoltage) {}
 

@@ -34,9 +34,20 @@ public class EndEffector extends SubsystemBase {
   private double PIDVoltage;
   private double FFVoltage;
   private double inputVoltage = 0.0;
+
   public EndEffector(EndEffectorIO io) {
-    PID = new ProfiledPIDController(EndEffectorConstants.ControlConstants.kP, EndEffectorConstants.ControlConstants.kI, EndEffectorConstants.ControlConstants.kD, new Constraints(0.5, 0.75));
-    FF = new ArmFeedforward(EndEffectorConstants.ControlConstants.kS, EndEffectorConstants.ControlConstants.kG, EndEffectorConstants.ControlConstants.kV,EndEffectorConstants.ControlConstants.kA);
+    PID =
+        new ProfiledPIDController(
+            EndEffectorConstants.ControlConstants.kP,
+            EndEffectorConstants.ControlConstants.kI,
+            EndEffectorConstants.ControlConstants.kD,
+            new Constraints(0.5, 0.75));
+    FF =
+        new ArmFeedforward(
+            EndEffectorConstants.ControlConstants.kS,
+            EndEffectorConstants.ControlConstants.kG,
+            EndEffectorConstants.ControlConstants.kV,
+            EndEffectorConstants.ControlConstants.kA);
     this.io = io;
   }
 
@@ -48,36 +59,47 @@ public class EndEffector extends SubsystemBase {
       switch (wantedState) {
         case Idle:
           io.setPivotVoltage(0);
-          io.setRollerVoltages(0, 0);
+          io.setRollerVoltages(0);
           break;
         case RollerVoltageControl:
           if (RobotContainer.driverController.povRight().getAsBoolean()) {
-            io.setRollerSpeeds(0.3, 0.1);
+            io.setRollerSpeeds(0.25);
           } else if (RobotContainer.driverController.povLeft().getAsBoolean()) {
-            io.setRollerSpeeds(-.3, -0.1);
+            io.setRollerSpeeds(-0.25);
           } else {
             wantedState = EndEffectorState.Idle;
           }
           break;
         case PivotVoltageControl:
           if (RobotContainer.driverController.leftBumper().getAsBoolean()) {
-            io.setPivotSpeed(-1);
+            io.setPivotSpeed(-0.05);
           } else if (RobotContainer.driverController.leftTrigger().getAsBoolean()) {
-            io.setPivotSpeed(1);
+            io.setPivotSpeed(0.05);
           } else {
             wantedState = EndEffectorState.Idle;
           }
           break;
         case GroundIntake:
-          PIDVoltage = PID.calculate(getPosition(),EndEffectorConstants.ControlConstants.groundIntakePosition);
-          FFVoltage = -FF.calculate(EndEffectorConstants.ControlConstants.groundIntakePosition*2*Math.PI,0.5);
-          inputVoltage = PIDVoltage+FFVoltage;
+          PIDVoltage =
+              PID.calculate(
+                  getPosition(), EndEffectorConstants.ControlConstants.groundIntakePosition);
+          FFVoltage =
+              -FF.calculate(
+                  EndEffectorConstants.ControlConstants.groundIntakePosition * 2 * Math.PI, 0.5);
+          inputVoltage = PIDVoltage + FFVoltage;
           io.setPivotVoltage(inputVoltage);
           break;
         case L4:
-          PIDVoltage = PID.calculate(getPosition(),EndEffectorConstants.ControlConstants.l4Position);
-          FFVoltage = -FF.calculate((EndEffectorConstants.ControlConstants.l4Position+EndEffectorConstants.ControlConstants.COMOffset)*2*Math.PI,0.5);
-          inputVoltage = PIDVoltage+FFVoltage;
+          PIDVoltage =
+              PID.calculate(getPosition(), EndEffectorConstants.ControlConstants.l4Position);
+          FFVoltage =
+              -FF.calculate(
+                  (EndEffectorConstants.ControlConstants.l4Position
+                          + EndEffectorConstants.ControlConstants.COMOffset)
+                      * 2
+                      * Math.PI,
+                  0.5);
+          inputVoltage = PIDVoltage + FFVoltage;
           io.setPivotVoltage(inputVoltage);
           break;
         default:
@@ -96,7 +118,8 @@ public class EndEffector extends SubsystemBase {
     PID.reset(getPosition());
     this.wantedState = wantedState;
   }
-  public double getPosition(){
+
+  public double getPosition() {
     return inputs.thruBorePosition;
   }
 }

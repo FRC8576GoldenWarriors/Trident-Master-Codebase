@@ -8,7 +8,6 @@ import frc.lib.drivers.WarriorSparkMax;
 
 public class EndEffectorIOSparkMax implements EndEffectorIO {
   private WarriorSparkMax sideRollerMotor;
-  private WarriorSparkMax topRollerMotor;
   private WarriorSparkMax pivotMotor;
 
   private DutyCycleEncoder pivotThruBore;
@@ -22,13 +21,6 @@ public class EndEffectorIOSparkMax implements EndEffectorIO {
             EndEffectorConstants.HardwareConstants.sideRollerInverted,
             IdleMode.kCoast,
             EndEffectorConstants.HardwareConstants.sideRollerCurrentLimit);
-    topRollerMotor =
-        new WarriorSparkMax(
-            EndEffectorConstants.HardwareConstants.topRollerID,
-            MotorType.kBrushless,
-            EndEffectorConstants.HardwareConstants.topRollerInverted,
-            IdleMode.kCoast,
-            EndEffectorConstants.HardwareConstants.topRollerCurrentLimit);
     pivotMotor =
         new WarriorSparkMax(
             EndEffectorConstants.HardwareConstants.pivotMotorID,
@@ -49,13 +41,13 @@ public class EndEffectorIOSparkMax implements EndEffectorIO {
   public void updateInputs(EndEffectorInputs inputs) {
     inputs.sideRollerVoltage = sideRollerMotor.getAppliedOutput();
     inputs.sideRollerCurrent = sideRollerMotor.getOutputCurrent();
-    inputs.topRollerVoltage = topRollerMotor.getAppliedOutput();
-    inputs.topRollerCurrent = topRollerMotor.getOutputCurrent();
+    // inputs.topRollerVoltage = topRollerMotor.getAppliedOutput();
+    // inputs.topRollerCurrent = topRollerMotor.getOutputCurrent();
 
     inputs.pivotVoltage = pivotMotor.getOutputCurrent();
     inputs.pivotCurrent = pivotMotor.getOutputCurrent();
 
-    inputs.coralDetected = coralSensor.getIsDetected().asSupplier().get();
+    inputs.coralDetected = sideRollerMotor.getOutputCurrent()>40;//coralSensor.getIsDetected().asSupplier().get();
     inputs.rangeConnected = coralSensor.isConnected();
 
     inputs.thruBorePosition = pivotThruBore.get();
@@ -68,14 +60,13 @@ public class EndEffectorIOSparkMax implements EndEffectorIO {
   }
 
   @Override
-  public void setRollerVoltages(double topRollerVoltage, double sideRollerVoltage) {
-    topRollerMotor.setVoltage(topRollerVoltage);
+  public void setRollerVoltages(double sideRollerVoltage) {
     sideRollerMotor.setVoltage(sideRollerVoltage);
   }
 
   @Override
-  public void setRollerSpeeds(double topRollerSpeed, double sideRollerSpeed) {
-    topRollerMotor.set(topRollerSpeed);
+  public void setRollerSpeeds(double sideRollerSpeed) {
+    // topRollerMotor.set(topRollerSpeed);
     sideRollerMotor.set(sideRollerSpeed);
   }
 

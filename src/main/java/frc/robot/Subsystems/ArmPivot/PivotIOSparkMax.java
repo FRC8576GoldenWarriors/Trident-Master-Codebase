@@ -3,7 +3,6 @@ package frc.robot.Subsystems.ArmPivot;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
-import edu.wpi.first.wpilibj.Timer;
 import frc.lib.drivers.WarriorSparkMax;
 
 public class PivotIOSparkMax implements PivotIO {
@@ -39,7 +38,7 @@ public class PivotIOSparkMax implements PivotIO {
     inputs.motorCurrent = pivotMotor.getOutputCurrent();
     inputs.thruBorePosition = thruBore.get();
     inputs.thruBoreConnected = thruBore.isConnected();
-    inputs.thruBoreVelocity = (thruBore.get()-lastPosition)/0.02;
+    inputs.thruBoreVelocity = (thruBore.get() - lastPosition) / 0.02;
     lastPosition = thruBore.get();
   }
 
