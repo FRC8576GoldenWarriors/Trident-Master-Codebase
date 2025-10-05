@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class EndEffector extends SubsystemBase {
   /** Creates a new EndEffector. */
@@ -35,13 +36,16 @@ public class EndEffector extends SubsystemBase {
   private double FFVoltage;
   private double inputVoltage = 0.0;
 
+  private LoggedNetworkNumber kPLoggedNetworkNumber = new LoggedNetworkNumber("Tuning/End Effector kP",EndEffectorConstants.ControlConstants.kP);
+  private double kP = kPLoggedNetworkNumber.get();
+
   public EndEffector(EndEffectorIO io) {
     PID =
         new ProfiledPIDController(
             EndEffectorConstants.ControlConstants.kP,
             EndEffectorConstants.ControlConstants.kI,
             EndEffectorConstants.ControlConstants.kD,
-            new Constraints(0.5, 0.75));
+            new Constraints(5, 10.75));//0.5, 1
     FF =
         new ArmFeedforward(
             EndEffectorConstants.ControlConstants.kS,
@@ -54,7 +58,10 @@ public class EndEffector extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
+    //340 Last kP Checked. Slow
     Logger.processInputs("End Effector", inputs);
+    kP = kPLoggedNetworkNumber.get();
+    PID.setP(kP);
     if (DriverStation.isEnabled()) {
       switch (wantedState) {
         case Idle:
@@ -63,9 +70,9 @@ public class EndEffector extends SubsystemBase {
           break;
         case RollerVoltageControl:
           if (RobotContainer.driverController.povRight().getAsBoolean()) {
-            io.setRollerSpeeds(0.25);
+            io.setRollerSpeeds(0.5);
           } else if (RobotContainer.driverController.povLeft().getAsBoolean()) {
-            io.setRollerSpeeds(-0.25);
+            io.setRollerSpeeds(-0.5);
           } else {
             wantedState = EndEffectorState.Idle;
           }
@@ -80,16 +87,29 @@ public class EndEffector extends SubsystemBase {
           }
           break;
         case GroundIntake:
+        if(Math.abs(getPosition()-EndEffectorConstants.ControlConstants.groundIntakePosition)<0.05){
+          PID.setP(50);
+        }
           PIDVoltage =
-              PID.calculate(
-                  getPosition(), EndEffectorConstants.ControlConstants.groundIntakePosition);
+              PID.calculate(getPosition(), EndEffectorConstants.ControlConstants.groundIntakePosition);
           FFVoltage =
               -FF.calculate(
-                  EndEffectorConstants.ControlConstants.groundIntakePosition * 2 * Math.PI, 0.5);
+                  (EndEffectorConstants.ControlConstants.groundIntakePosition
+                          + EndEffectorConstants.ControlConstants.COMOffset)
+                      * 2
+                      * Math.PI,
+                  0.5);
           inputVoltage = PIDVoltage + FFVoltage;
           io.setPivotVoltage(inputVoltage);
+          io.setRollerSpeeds(0.5);
+          if(getCoralDetected()){
+            wantedState=EndEffectorState.Idle;
+          }
           break;
         case L4:
+        if(Math.abs(getPosition()-EndEffectorConstants.ControlConstants.l4Position)<0.05){
+          PID.setP(50);
+        }
           PIDVoltage =
               PID.calculate(getPosition(), EndEffectorConstants.ControlConstants.l4Position);
           FFVoltage =
@@ -111,6 +131,7 @@ public class EndEffector extends SubsystemBase {
     Logger.recordOutput("End Effector/PID Voltage", PIDVoltage);
     Logger.recordOutput("End Effector/FF Voltage", FFVoltage);
     Logger.recordOutput("End Effector/Input Voltage", inputVoltage);
+    Logger.recordOutput("End Effector/kP", PID.getP());
     // This method will be called once per scheduler run
   }
 
@@ -121,5 +142,8 @@ public class EndEffector extends SubsystemBase {
 
   public double getPosition() {
     return inputs.thruBorePosition;
+  }
+  public boolean getCoralDetected(){
+    return inputs.coralDetected;
   }
 }

@@ -34,6 +34,8 @@ public class EndEffectorIOSparkMax implements EndEffectorIO {
             EndEffectorConstants.HardwareConstants.pivotThruBoreID,
             EndEffectorConstants.HardwareConstants.thruBoreFullRange,
             EndEffectorConstants.HardwareConstants.thruBoreExpectedZero);
+
+    pivotThruBore.setInverted(EndEffectorConstants.HardwareConstants.pivotEncoderInverted);
     coralSensor = new CANrange(EndEffectorConstants.HardwareConstants.canRangeID);
   }
 
@@ -47,7 +49,8 @@ public class EndEffectorIOSparkMax implements EndEffectorIO {
     inputs.pivotVoltage = pivotMotor.getOutputCurrent();
     inputs.pivotCurrent = pivotMotor.getOutputCurrent();
 
-    inputs.coralDetected = sideRollerMotor.getOutputCurrent()>40;//coralSensor.getIsDetected().asSupplier().get();
+    inputs.coralDetected =
+        coralSensor.getIsDetected().asSupplier().get();
     inputs.rangeConnected = coralSensor.isConnected();
 
     inputs.thruBorePosition = pivotThruBore.get();

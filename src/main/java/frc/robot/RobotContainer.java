@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.Commands.SwerveDrive;
+import frc.robot.Macros.States;
 import frc.robot.Subsystems.ArmPivot.Pivot;
 import frc.robot.Subsystems.ArmPivot.PivotIOSparkMax;
 import frc.robot.Subsystems.ArmPivot.Pivot.PivotPositions;
@@ -26,6 +27,8 @@ import frc.robot.Subsystems.EndEffector.EndEffector;
 import frc.robot.Subsystems.EndEffector.EndEffectorIOSparkMax;
 import frc.robot.Subsystems.EndEffector.EndEffector.EndEffectorState;
 import frc.robot.Subsystems.SwerveDrive.Drivetrain;
+import frc.robot.Subsystems.SwerveDrive.Gyro.*;
+import frc.robot.Subsystems.SwerveDrive.Module.*;
 
 public class RobotContainer {
   public static Drivetrain m_Drivetrain;
@@ -37,9 +40,10 @@ public class RobotContainer {
   public final JoystickButton resetHeading_Start =
       new JoystickButton(driverController.getHID(), XboxController.Button.kStart.value);
   public final SendableChooser<Command> autoChooser;
+  //public static final Macros macros = new Macros(armPivot, armWinch, endEffector);
 
   public RobotContainer() {
-    m_Drivetrain = Drivetrain.getInstance();
+    m_Drivetrain = new Drivetrain(new GyroPidgeonIO(), new ModuleIOSparkMax(1), new ModuleIOSparkMax(2), new ModuleIOSparkMax(3), new ModuleIOSparkMax(4));
     m_Drivetrain.setDefaultCommand(new SwerveDrive());
     registerNamedCommands();
     configureBindings();
@@ -52,7 +56,7 @@ public class RobotContainer {
     // driverController.povDown().whileTrue(new InstantCommand(()->armPivot.setPivotPosition(PivotPositions.ManualControl)));
 
     driverController.y().whileTrue(new InstantCommand(()->armWinch.setWantedState(WinchStates.ManualControl),armWinch));
-    driverController.a().whileTrue(new InstantCommand(()->armWinch.setWantedState(WinchStates.ManualControl),armWinch));
+   // driverController.a().onTrue(new InstantCommand(()->macros.setWantedState(States.L4)));
     
     driverController.b().onTrue(new InstantCommand(()->armWinch.setWantedState(WinchStates.TestPID),armWinch));
     // //driverController.a().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.RollerVoltageControl),endEffector));
@@ -60,13 +64,13 @@ public class RobotContainer {
     // driverController.povLeft().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.RollerVoltageControl),endEffector));
     // driverController.povRight().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.RollerVoltageControl),endEffector));
     //driverController.rightBumper().onTrue(new InstantCommand(()->armPivot.setPivotPosition(PivotPositions.GroundIntake),armPivot));
-    driverController.rightBumper().onTrue(new InstantCommand(()->armPivot.setPivotPosition(PivotPositions.FrontL1)));
+    driverController.rightBumper().onTrue(new InstantCommand(()->armPivot.setPivotPosition(PivotPositions.FrontL1),armPivot));
     driverController.rightTrigger().onTrue(new InstantCommand(()->armWinch.zeroEncoder()));
     //driverController.rightTrigger().onTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.L4),endEffector));
-    //driverController.leftTrigger().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.PivotVoltageControl),endEffector));
-    //driverController.leftBumper().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.PivotVoltageControl),endEffector));
+    driverController.leftTrigger().whileTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.PivotVoltageControl),endEffector));
+    //driverController.leftBumper().onTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.L4),endEffector));
     
-    driverController.leftBumper().onTrue(new InstantCommand(()->armPivot.setPivotPosition(PivotPositions.GroundIntake),armPivot));
+    driverController.leftBumper().onTrue(new InstantCommand(()->endEffector.setWantedState(EndEffectorState.GroundIntake),endEffector).until(()->endEffector.getCoralDetected()));
     driverController.povUp().whileTrue(new InstantCommand(()->armPivot.setPivotPosition(PivotPositions.ManualControl),armPivot));
     
     driverController.povDown().whileTrue(new InstantCommand(()->armPivot.setPivotPosition(PivotPositions.ManualControl),armPivot));

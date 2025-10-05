@@ -11,6 +11,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
+import frc.robot.RobotContainer;
 import frc.robot.Subsystems.SwerveDrive.Drivetrain;
 import frc.robot.Subsystems.Vision.Limelight.LimelightHelpers.PoseEstimate;
 import java.util.ArrayList;
@@ -19,7 +20,7 @@ import java.util.Collections;
 public class LimelightIO implements LimelightVisionIO {
   private String networkTableName;
   // private StructPublisher<Pose2d> limelightRobotPose;
-  private static Drivetrain drivetrainInstance = Drivetrain.getInstance();
+  private static Drivetrain drivetrainInstance = RobotContainer.m_Drivetrain;
   public static boolean AlignedVar = false;
 
   // private Stack<Double> tagSeenTimestampStack = new Stack<>();
@@ -55,8 +56,6 @@ public class LimelightIO implements LimelightVisionIO {
       Pair<PoseEstimate, Boolean> megaTag1EstimateAndStatus = this.getMegaTag1RobotPoseEstimate();
       Pair<PoseEstimate, Boolean> megaTag2EstimateAndStatus = this.getMegaTag2RobotPoseEstimate();
 
-      this.integratePose();
-
       inputs.megaTag1UpdateAccepted = megaTag1EstimateAndStatus.getSecond();
       inputs.megaTag2UpdateAccepted = megaTag2EstimateAndStatus.getSecond();
 
@@ -69,6 +68,8 @@ public class LimelightIO implements LimelightVisionIO {
       inputs.megaTag1AmountOfTagsInView = megaTag1PoseEstimate.tagCount;
       inputs.megaTag2AmountOfTagsInView = megaTag2PoseEstimate.tagCount;
 
+      inputs.miliLatencyMegaTag2 = megaTag2PoseEstimate.latency;
+      inputs.timestampMegaTag2 = megaTag2PoseEstimate.timestampSeconds;
       // inputs.megaTag1ambiguity = megaTag1PoseEstimate.rawFiducials[0].ambiguity;
       // inputs.megaTag2ambiguity = megaTag2PoseEstimate.rawFiducials[0].ambiguity;
 
@@ -81,7 +82,7 @@ public class LimelightIO implements LimelightVisionIO {
           NetworkTableInstance.getDefault()
               .getTable("limelight")
               .getEntry("stddevs")
-              .getDoubleArray(new double[6]);
+              .getDoubleArray(new double[12]);
       inputs.generatedStddevs =
           new double[] {
             stddevs[0],
@@ -90,12 +91,18 @@ public class LimelightIO implements LimelightVisionIO {
             stddevs[3],
             stddevs[4],
             stddevs[5],
+            stddevs[6],
+            stddevs[7],
+            stddevs[8],
+            stddevs[9],
+            stddevs[10],
+            stddevs[11],
             drivetrainInstance.getForwardVelocity(),
             Timer.getFPGATimestamp()
           };
     }
 
-    this.setDynamicCrop();
+    // this.setDynamicCrop();
   }
 
   @Override
@@ -131,20 +138,29 @@ public class LimelightIO implements LimelightVisionIO {
     return networkTableName;
   }
 
-  private void integratePose() {
-    var megaTag2PoseEstimate = this.getMegaTag2RobotPoseEstimate();
+  public void integratePose() {
 
-    if (megaTag2PoseEstimate.getSecond() && megaTag2PoseEstimate.getFirst() != null) {
-      // drivetrainInstance.setVisionMeasurementStdDevs(.7, .7, 9999999);
-      drivetrainInstance.setVisionMeasurementStdDevs(
-          .3, // * LimelightHelpers.getTY(networkTableName),
-          .3, // * LimelightHelpers.getTX(networkTableName),
-          9999999);
+    double xDev = .3;
+    double yDev = .3;
+    double thetaDev = 9999999;
 
-      drivetrainInstance.addVisionMeasurement(
-          megaTag2PoseEstimate.getFirst().pose,
-          Timer.getFPGATimestamp() - megaTag2PoseEstimate.getFirst().latency);
-    }
+    // xDev *= Math.log(1000) /
+    // Math.log(drivetrainInstance.getRobotRelativeSpeeds().vxMetersPerSecond);
+    // yDev *= Math.log(1000) /
+    // Math.log(drivetrainInstance.getRobotRelativeSpeeds().vyMetersPerSecond);
+
+    // if(megaTag2PoseEstimate.getFirst().tagCount >= 2) {
+    //   xDev = 1/(2 * megaTag2PoseEstimate.getFirst().tagCount);
+    //   yDev = 1/(2 * megaTag2PoseEstimate.getFirst().tagCount);
+    // }
+
+    // if (megaTag2PoseEstimate.getFirst().tagCount == 0) {
+    //   xDev = 1.4;
+    //   yDev = 1.4;
+    //   thetaDev = 1.4;
+    // }
+
+    drivetrainInstance.addVisionMeasurement(this, xDev, yDev, thetaDev);
   }
 
   private void setCrop(double leftCrop, double rightCrop, double bottomCrop, double topCrop) {
@@ -226,21 +242,22 @@ public class LimelightIO implements LimelightVisionIO {
         0);
 
     LimelightHelpers.PoseEstimate megaTagEstimate =
-        (isBlueAlliance())
-            ? LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(networkTableName)
-            : LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(networkTableName);
+        LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(networkTableName);
+    // (isBlueAlliance())
+    //     ? LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(networkTableName)
+    //     : LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(networkTableName);
 
-    if (megaTagEstimate.tagCount == 0) acceptUpdate = false;
+    // if (megaTagEstimate.tagCount == 0) acceptUpdate = false;
 
-    if (acceptUpdate) {
+    // if (acceptUpdate) {
 
-      if (megaTagEstimate.tagCount == 1
-          && megaTagEstimate.rawFiducials.length == 1
-          && (megaTagEstimate.rawFiducials[0].ambiguity > .25
-              || megaTagEstimate.rawFiducials[0].distToCamera > 3)) acceptUpdate = false;
+    //   if (megaTagEstimate.tagCount == 1
+    //       && megaTagEstimate.rawFiducials.length == 1
+    //       && (megaTagEstimate.rawFiducials[0].ambiguity > .25
+    //           || megaTagEstimate.rawFiducials[0].distToCamera > 3)) acceptUpdate = false;
 
-      if (Math.abs(drivetrainInstance.getRate()) > 720) acceptUpdate = false;
-    }
+    //   if (Math.abs(drivetrainInstance.getRate()) > 720) acceptUpdate = false;
+    // }
 
     // if (acceptUpdate) {
 
@@ -251,6 +268,14 @@ public class LimelightIO implements LimelightVisionIO {
     // }
 
     return Pair.of(megaTagEstimate, acceptUpdate);
+  }
+
+  public PoseEstimate getPoseEstimate() {
+    return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(networkTableName);
+  }
+
+  public void setRobotOrientation(double yaw) {
+    LimelightHelpers.SetRobotOrientation(networkTableName, yaw, 0, 0, 0, 0, 0);
   }
 
   public static boolean isBlueAlliance() {

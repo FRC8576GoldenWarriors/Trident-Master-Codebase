@@ -4,7 +4,6 @@
 
 package frc.robot.Subsystems.ArmWinch;
 
-import edu.wpi.first.math.controller.ArmFeedforward;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -43,9 +42,10 @@ public class ArmWinch extends SubsystemBase {
   private ProfiledPIDController PID;
   private ElevatorFeedforward FF;
 
-  
-  private LoggedNetworkNumber kPLoggedNetworkNumber = new LoggedNetworkNumber("Tuning/Arm Winch kP", ArmWinchConstants.ControlConstants.kP);
-  private LoggedNetworkNumber kGLoggedNetworkNumber = new LoggedNetworkNumber("Tuning/Arm Winch kG", ArmWinchConstants.ControlConstants.kG);
+  private LoggedNetworkNumber kPLoggedNetworkNumber =
+      new LoggedNetworkNumber("Tuning/Arm Winch kP", ArmWinchConstants.ControlConstants.kP);
+  private LoggedNetworkNumber kGLoggedNetworkNumber =
+      new LoggedNetworkNumber("Tuning/Arm Winch kG", ArmWinchConstants.ControlConstants.kG);
   private double kP = kPLoggedNetworkNumber.get();
   private double kG = kGLoggedNetworkNumber.get();
   private double PIDVoltage = 0.0;
@@ -64,7 +64,12 @@ public class ArmWinch extends SubsystemBase {
                 ArmWinchConstants.ControlConstants.maxVelocity,
                 ArmWinchConstants.ControlConstants.maxAcceleration));
 
-    FF = new ElevatorFeedforward(ArmWinchConstants.ControlConstants.kS, ArmWinchConstants.ControlConstants.kG, ArmWinchConstants.ControlConstants.kV,ArmWinchConstants.ControlConstants.kA);
+    FF =
+        new ElevatorFeedforward(
+            ArmWinchConstants.ControlConstants.kS,
+            ArmWinchConstants.ControlConstants.kG,
+            ArmWinchConstants.ControlConstants.kV,
+            ArmWinchConstants.ControlConstants.kA);
   }
 
   @Override
@@ -83,9 +88,16 @@ public class ArmWinch extends SubsystemBase {
           io.setVoltage(0);
           break;
         case Holding:
-          PIDVoltage = PID.calculate(getPosition(), new TrapezoidProfile.State(100, 0.0));
+        if (Math.abs(getPosition() - ArmWinchConstants.ControlConstants.holding) < 100
+              || getPosition() > ArmWinchConstants.ControlConstants.holding) {
+            // PID.setP(0.2);
+          }
+          PIDVoltage =
+              PID.calculate(
+                  getPosition(),
+                  new TrapezoidProfile.State(ArmWinchConstants.ControlConstants.holding, 0.0));
           io.setVoltage(PIDVoltage);
-          break;
+    break;
         case ManualControl:
           if (RobotContainer.driverController.a().getAsBoolean()) {
             io.setSpeed(0.05);
@@ -104,7 +116,7 @@ public class ArmWinch extends SubsystemBase {
           }
           break;
         case TestPID:
-        //0.064 is smooth
+          // 0.064 is smooth
           if (Math.abs(getPosition() - ArmWinchConstants.ControlConstants.testPosition) < 50
               || getPosition() > ArmWinchConstants.ControlConstants.testPosition) {
             PID.setP(0.128);
@@ -114,10 +126,8 @@ public class ArmWinch extends SubsystemBase {
                   getPosition(),
                   new TrapezoidProfile.State(ArmWinchConstants.ControlConstants.testPosition, 0.0));
 
-          FFVoltage = 
-          FF.calculate(ArmWinchConstants.ControlConstants.maxVelocity);
-          inputVoltage = PIDVoltage+FFVoltage;
-          
+          FFVoltage = FF.calculate(ArmWinchConstants.ControlConstants.maxVelocity);
+          inputVoltage = PIDVoltage + FFVoltage;
 
           io.setVoltage(inputVoltage);
           break;
@@ -241,7 +251,7 @@ public class ArmWinch extends SubsystemBase {
     Logger.recordOutput("Arm Winch/PID Voltage", PIDVoltage);
     Logger.recordOutput("Arm Winch/Wanted State", wantedState);
     Logger.recordOutput("Arm Winch/PID At Goal", PID.atGoal());
-    Logger.recordOutput("Arm Winch/Input Voltage",inputVoltage);
+    Logger.recordOutput("Arm Winch/Input Voltage", inputVoltage);
 
     // This method will be called once per scheduler run
   }
@@ -254,7 +264,8 @@ public class ArmWinch extends SubsystemBase {
   public double getPosition() {
     return inputs.thruBorePosition;
   }
-  public double getVelocity(){
+
+  public double getVelocity() {
     return inputs.thruBoreVelocity;
   }
 
