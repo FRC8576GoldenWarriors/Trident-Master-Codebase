@@ -13,11 +13,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.lib.drivers.ButtonBoard.SideState;
 import frc.robot.Subsystems.SwerveDrive.Drivetrain;
 import frc.robot.Subsystems.SwerveDrive.SwerveConstants;
-import frc.robot.Subsystems.Vision.TagMap;
 import frc.robot.Subsystems.Vision.Limelight.Limelight;
 import frc.robot.Subsystems.Vision.Limelight.LimelightConstants;
+import frc.robot.Subsystems.Vision.TagMap;
 import frc.robot.Subsystems.Vision.TagMap.Face;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Supplier;
@@ -41,8 +40,7 @@ public class ReefAlign extends Command {
   private HashMap<String, Supplier<Pair<Double, Double>>> limelightNameToDistanceAndAngle =
       new HashMap<>();
 
-  public ReefAlign(
-      Limelight limelight, Drivetrain drivetrain, TagMap tagMap, SideState sideState) {
+  public ReefAlign(Limelight limelight, Drivetrain drivetrain, TagMap tagMap, SideState sideState) {
 
     this.limelight = limelight;
     this.drivetrain = drivetrain;
@@ -76,12 +74,14 @@ public class ReefAlign extends Command {
 
     switch (sideState) {
       case LEFT:
-        strafePID.setSetpoint(LimelightConstants.PhysicalConstants.LEFT_STICK_OFFSET); //set these
+        strafePID.setSetpoint(
+            LimelightConstants.PhysicalConstants.LEFT_STICK_OFFSET); // set these values correctly
         this.name = LimelightConstants.NameConstants.LEFT_NETWORKTABLE_KEY;
         break;
 
       case RIGHT:
-        strafePID.setSetpoint(LimelightConstants.PhysicalConstants.RIGHT_STICK_OFFSET); //set these
+        strafePID.setSetpoint(
+            LimelightConstants.PhysicalConstants.RIGHT_STICK_OFFSET); // set these values correctly
         this.name = LimelightConstants.NameConstants.RIGHT_NETWORKTABLE_KEY;
         break;
     }
@@ -117,8 +117,8 @@ public class ReefAlign extends Command {
 
     var values = limelightNameToDistanceAndAngle.values();
 
-    for(Supplier<Pair<Double, Double>> i : values) {
-      Pair<Double, Double> pair = i.get();
+    for (Supplier<Pair<Double, Double>> distanceAnglePair : values) {
+      Pair<Double, Double> pair = distanceAnglePair.get();
       averageDistance += pair.getFirst() * Math.sin(Math.toRadians(pair.getSecond()));
     }
 
@@ -130,10 +130,12 @@ public class ReefAlign extends Command {
 
     driveOutput = forwardPID.calculate(averageDistance);
     strafeOutput = strafePID.calculate(sideDistance);
-    rotationOutput = rotationPID.calculate(drivetrain.getHeading(), tagMap.getAlignRotationInDegrees(limelight.getTagID(name), Face.FrontSide));
+    rotationOutput =
+        rotationPID.calculate(
+            drivetrain.getHeading(),
+            tagMap.getAlignRotationInDegrees(limelight.getTagID(name), Face.FrontSide));
 
     drivetrain.drive(new Translation2d(driveOutput, strafeOutput), rotationOutput, false, true);
-    
   }
 
   @Override

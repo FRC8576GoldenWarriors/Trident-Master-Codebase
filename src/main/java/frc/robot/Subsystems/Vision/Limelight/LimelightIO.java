@@ -60,11 +60,15 @@ public class LimelightIO implements LimelightVisionIO {
               .getEntry("stddevs")
               .getDoubleArray(new double[12]);
 
-      inputs.distance =
-          (layout.getTagPose(inputs.tagId).get().getZ() - limelightPose.getZ())
-              / Math.tan(
-                  Math.abs(limelightPose.getRotation().getY())
-                      + Math.toRadians(Math.abs(inputs.pitch)));
+      if (limelightPose != null) {
+        inputs.distance =
+            (layout.getTagPose(inputs.tagId).get().getZ() - limelightPose.getZ())
+                / Math.tan(
+                    Math.abs(limelightPose.getRotation().getY())
+                        + Math.toRadians(Math.abs(inputs.pitch)));
+      } else {
+        inputs.distance = 0; // Default value or handle appropriately
+      }
     }
 
     // this.setDynamicCrop();
@@ -120,9 +124,9 @@ public class LimelightIO implements LimelightVisionIO {
             .getEntry("tcornxy")
             .getDoubleArray(new double[0]);
 
-    int tagsWithSuitbaleCorners = corners.length / 8;
+    int tagsWithSuitableCorners = corners.length / 8;
 
-    for (int i = 0; i < (8 * tagsWithSuitbaleCorners - 1); i++) {
+    for (int i = 0; i < (8 * tagsWithSuitableCorners - 1); i++) {
       if (i % 2 == 0) cornerXList.add(corners[i]);
       else cornerYList.add(corners[i]);
     }
@@ -157,6 +161,6 @@ public class LimelightIO implements LimelightVisionIO {
   }
 
   public static boolean isBlueAlliance() {
-    return DriverStation.getAlliance().get() == Alliance.Blue;
+    return DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue;
   }
 }

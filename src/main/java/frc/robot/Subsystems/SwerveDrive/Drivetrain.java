@@ -86,7 +86,7 @@ public class Drivetrain extends SubsystemBase {
                 VecBuilder.fill(
                     LimelightConstants.PoseEstimationConstants.baseDrivetrainXDeviaition,
                     LimelightConstants.PoseEstimationConstants.baseDrivetrainYDeviaition,
-                    LimelightConstants.PoseEstimationConstants.baseDrivetrainThetaDeviaition),
+                    LimelightConstants.PoseEstimationConstants.baseDrivetrainThetaDeviation),
                 VecBuilder.fill(
                     LimelightConstants.PoseEstimationConstants.baseVisionXDeviaition,
                     LimelightConstants.PoseEstimationConstants.baseVisionYDeviaition,
@@ -252,7 +252,8 @@ public class Drivetrain extends SubsystemBase {
 
   public double getBlueAbsoluteHeading() {
     double relativeHeading = gyro.getYaw();
-    if (DriverStation.getAlliance().get().equals(Alliance.Red)) {
+    if (DriverStation.getAlliance().isPresent()
+        && DriverStation.getAlliance().get().equals(Alliance.Red)) {
       relativeHeading += 180;
     }
 

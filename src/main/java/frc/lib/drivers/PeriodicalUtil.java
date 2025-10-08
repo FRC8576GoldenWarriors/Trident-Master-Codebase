@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PeriodicalUtil {
-  private static List<Periodical> periodicls = new ArrayList<>();
+  private static List<Periodical> periodicals = new ArrayList<>();
 
   public static void registerPeriodic(Periodical periodic) {
-    periodicls.add(periodic);
+    periodicals.add(periodic);
   }
 
   public static void runPeriodic() {
-    periodicls.forEach((periodical) -> periodical.periodic());
+    periodicals.forEach((periodical) -> periodical.periodic());
   }
 }
 

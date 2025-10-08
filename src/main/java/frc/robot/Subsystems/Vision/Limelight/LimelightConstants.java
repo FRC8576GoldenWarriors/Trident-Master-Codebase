@@ -70,7 +70,7 @@ public class LimelightConstants {
 
     public static final double baseDrivetrainXDeviaition = 0.01;
     public static final double baseDrivetrainYDeviaition = 0.01;
-    public static final double baseDrivetrainThetaDeviaition = 0.0000001;
+    public static final double baseDrivetrainThetaDeviation = 0.0000001;
 
     public static final double baseVisionXDeviaition = 0.3;
     public static final double baseVisionYDeviaition = 0.3;

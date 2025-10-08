@@ -42,6 +42,8 @@ public class WarriorSwervePoseEstimator extends SwerveDrivePoseEstimator impleme
   Queue<Pair<String, PoseEstimate>> poseEstimateQueue = new LinkedList<>();
 
   boolean useDynamicVisionDeviations;
+  private static final double MAX_OMEGA_RADIANS_PER_SECOND = 3 * Math.PI;
+  private static final double MAXIMUM_TAG_AMBIGUITY = 0.4;
   AprilTagFieldLayout fieldMap;
 
   public WarriorSwervePoseEstimator(
@@ -79,8 +81,7 @@ public class WarriorSwervePoseEstimator extends SwerveDrivePoseEstimator impleme
   }
 
   public boolean isValidPoseEstimate(PoseEstimate poseEstimate) {
-
-    double maximumTagAmbiguity = 0.4;
+    double maximumTagAmbiguity = MAXIMUM_TAG_AMBIGUITY;
 
     if (poseEstimate == null) return false;
 
@@ -106,7 +107,7 @@ public class WarriorSwervePoseEstimator extends SwerveDrivePoseEstimator impleme
 
     ChassisSpeeds currentRobotSpeeds = robotSpeeds.get();
 
-    if (currentRobotSpeeds.omegaRadiansPerSecond > 3 * Math.PI) return false;
+    if (currentRobotSpeeds.omegaRadiansPerSecond > MAX_OMEGA_RADIANS_PER_SECOND) return false;
 
     if (Math.sqrt(
             Math.pow(currentRobotSpeeds.vxMetersPerSecond, 2)
@@ -135,7 +136,8 @@ public class WarriorSwervePoseEstimator extends SwerveDrivePoseEstimator impleme
         ((poseEstimate.avgTagDist + Math.abs(drivetrainSpeeds.vyMetersPerSecond)))
             / poseEstimate.tagCount;
 
-    double generatedThetaDev = LimelightConstants.PoseEstimationConstants.baseVisionThetaDeviaition;
+    double generatedThetaDev =
+        LimelightConstants.PoseEstimationConstants.baseDrivetrainThetaDeviation;
 
     Logger.recordOutput(
         "/Deviation Determinants/Average Tag Distance (m)", poseEstimate.avgTagDist);

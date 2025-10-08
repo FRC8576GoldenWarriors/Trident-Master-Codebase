@@ -2,16 +2,12 @@ package frc.lib.drivers;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
-import frc.robot.Subsystems.Vision.TagMap;
-import frc.robot.Subsystems.Vision.Limelight.Limelight;
 import frc.robot.Subsystems.Vision.Limelight.LimelightConstants;
+import frc.robot.Subsystems.Vision.TagMap;
 import frc.robot.Subsystems.Vision.TagMap.Face;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
@@ -83,22 +79,21 @@ public class ButtonBoard implements Periodical {
   }
 
   private boolean isBlueAlliance() {
-    return DriverStation.getAlliance().get() == Alliance.Blue;
+    return DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue;
   }
 
-  public DeferredCommand getCurrentCommand(Subsystem...requirements) {
+  public DeferredCommand getCurrentCommand(Subsystem... requirements) {
     return tagMap.getReefAlignmentPathfindToPose(
-      tagID, 
-      LimelightConstants.PhysicalConstants.DESIRED_APRIL_TAG_DISTANCE_REEF,
-      sideDistance, 
-      Face.FrontSide, 
-      requirements);
+        tagID,
+        LimelightConstants.PhysicalConstants.DESIRED_APRIL_TAG_DISTANCE_REEF,
+        sideDistance,
+        Face.FrontSide,
+        requirements);
   }
-
 
   // Could be used to clean up the bindings
   public void configureButtonBoardBindings() {
-    //buttonBoard.button(1).onTrue(new InstantCommand(() -> this.setState(FaceState.A)));
+    // buttonBoard.button(1).onTrue(new InstantCommand(() -> this.setState(FaceState.A)));
   }
 
   @Override

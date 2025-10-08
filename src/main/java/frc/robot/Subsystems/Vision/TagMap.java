@@ -42,7 +42,7 @@ public class TagMap {
     REEF,
     BARGE,
     CORAL,
-    PROCCESSOR
+    PROCESSOR
   }
 
   public TagMap(AprilTagFields field, Tags tagEnum) {
@@ -82,7 +82,7 @@ public class TagMap {
                     })
                 .toList();
         break;
-      case PROCCESSOR:
+      case PROCESSOR:
         tags =
             tags.stream()
                 .filter(
@@ -295,19 +295,19 @@ public class TagMap {
         Set.of(requirements));
   }
 
-  public DeferredCommand getReefAlignmentPathfindToPose(int tagID,
-    double distFromFaceOffset, double sideDistance, Face faceSide, Subsystem... requirements) {
-  return new DeferredCommand(
-      () ->
-          AutoBuilder.pathfindToPose(
-              getReefAlignmentPose(
-                  tagID,
-                  distFromFaceOffset,
-                  sideDistance,
-                  faceSide),
-              PathFinderConstants.constraints),
-      Set.of(requirements));
-}
+  public DeferredCommand getReefAlignmentPathfindToPose(
+      int tagID,
+      double distFromFaceOffset,
+      double sideDistance,
+      Face faceSide,
+      Subsystem... requirements) {
+    return new DeferredCommand(
+        () ->
+            AutoBuilder.pathfindToPose(
+                getReefAlignmentPose(tagID, distFromFaceOffset, sideDistance, faceSide),
+                PathFinderConstants.constraints),
+        Set.of(requirements));
+  }
 
   public Pose2d getClosestTagPoseToMoveTo(
       double distFromFaceOffset, Face faceSide, Pose2d robotPose) {
