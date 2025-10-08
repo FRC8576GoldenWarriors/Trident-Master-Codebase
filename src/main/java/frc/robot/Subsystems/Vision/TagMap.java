@@ -16,12 +16,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.DeferredCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.robot.Commands.VisionReefAlign;
-import frc.robot.Commands.VisionReefAlign.ReefAlignState;
+// import frc.robot.Commands.VisionReefAlign;
+// import frc.robot.Commands.VisionReefAlign.ReefAlignState;
 import frc.robot.RobotContainer;
-import frc.robot.Subsystems.SwerveDrive.Drivetrain;
 import frc.robot.Subsystems.SwerveDrive.SwerveConstants;
-import frc.robot.Subsystems.Vision.Limelight.Limelight;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -44,7 +42,7 @@ public class TagMap {
     REEF,
     BARGE,
     CORAL,
-    PROCCESSOR
+    PROCESSOR
   }
 
   public TagMap(AprilTagFields field, Tags tagEnum) {
@@ -84,7 +82,7 @@ public class TagMap {
                     })
                 .toList();
         break;
-      case PROCCESSOR:
+      case PROCESSOR:
         tags =
             tags.stream()
                 .filter(
@@ -223,6 +221,94 @@ public class TagMap {
     return new Pose2d(poseTranslation2d, poseRotation2d);
   }
 
+  // negative side distance is a translation to the left, positive is a translation to the right
+  public Pose2d getTagPoseToMoveTo(
+      int tagID, double distFromFaceOffset, double sideDistance, Face faceSide) {
+    Pose2d tagPose = this.getTagPose3d(tagID).toPose2d();
+
+    double robotSizeOffset = 0;
+
+    switch (faceSide) {
+      case FrontSide:
+        robotSizeOffset = Units.inchesToMeters(25) / 2;
+        break;
+
+      case LeftSide:
+        robotSizeOffset = Units.inchesToMeters(25) / 2;
+        break;
+
+      case BackSide:
+        robotSizeOffset = Units.inchesToMeters(25) / 2;
+        break;
+
+      case RightSide:
+        robotSizeOffset = Units.inchesToMeters(25) / 2;
+        break;
+
+      default:
+        robotSizeOffset = 0;
+        break;
+    }
+
+    Rotation2d poseRotation2d =
+        new Rotation2d(Units.degreesToRadians(this.getAlignRotationInDegrees(tagID, faceSide)));
+
+    double xCoord =
+        (tagPose.getX()
+            + (distFromFaceOffset + robotSizeOffset)
+                * Math.cos(tagPose.getRotation().getRadians()));
+    double yCoord =
+        (tagPose.getY()
+            + (distFromFaceOffset + robotSizeOffset)
+                * Math.sin(tagPose.getRotation().getRadians()));
+
+    xCoord +=
+        Math.abs(sideDistance)
+            * Math.cos(
+                tagPose.getRotation().getRadians() + Math.signum(sideDistance) * Math.PI / 2);
+    yCoord +=
+        Math.abs(sideDistance)
+            * Math.sin(
+                tagPose.getRotation().getRadians() + Math.signum(sideDistance) * Math.PI / 2);
+
+    Translation2d poseTranslation2d = new Translation2d(xCoord, yCoord);
+
+    return new Pose2d(poseTranslation2d, poseRotation2d);
+  }
+
+  public Pose2d getReefAlignmentPose(
+      int tagID, double distFromFaceOffset, double sideDistance, Face faceSide) {
+    return this.getTagPoseToMoveTo(tagID, distFromFaceOffset, sideDistance, faceSide);
+  }
+
+  public Command getReefAlignmentPathfindToPose(
+      double distFromFaceOffset, double sideDistance, Face faceSide, Subsystem... requirements) {
+    return new DeferredCommand(
+        () ->
+            AutoBuilder.pathfindToPose(
+                getReefAlignmentPose(
+                    this.getTagIDClosestToRobotPose(RobotContainer.m_Drivetrain.getPose()),
+                    distFromFaceOffset,
+                    sideDistance,
+                    faceSide),
+                PathFinderConstants.constraints),
+        Set.of(requirements));
+  }
+
+  public DeferredCommand getReefAlignmentPathfindToPose(
+      int tagID,
+      double distFromFaceOffset,
+      double sideDistance,
+      Face faceSide,
+      Subsystem... requirements) {
+    return new DeferredCommand(
+        () ->
+            AutoBuilder.pathfindToPose(
+                getReefAlignmentPose(tagID, distFromFaceOffset, sideDistance, faceSide),
+                PathFinderConstants.constraints),
+        Set.of(requirements));
+  }
+
   public Pose2d getClosestTagPoseToMoveTo(
       double distFromFaceOffset, Face faceSide, Pose2d robotPose) {
     return this.getTagPoseToMoveTo(
@@ -279,19 +365,19 @@ public class TagMap {
   }
 
   public Command AlignToClosestTag(Subsystem... requirements) {
-    return this.getPathFindCommand(requirements)
-        .andThen(
-            new VisionReefAlign(
-                (Drivetrain) requirements[0], (Limelight) requirements[1], ReefAlignState.Middle));
+    return this.getPathFindCommand(requirements);
+    // .andThen(
+    //     new VisionReefAlign(
+    //         (Drivetrain) requirements[0], (Limelight) requirements[1], ReefAlignState.Middle));
   }
 
   public Command AlignToTag(
       int tagID, double faceOffset, Face faceSide, Subsystem... requirements) {
-    return this.getPathFindCommand(tagID, faceOffset, faceSide, requirements)
-        .andThen(
-            new VisionReefAlign(
-                (Drivetrain) requirements[0],
-                (Limelight) requirements[1],
-                ReefAlignState.LeftSide));
+    return this.getPathFindCommand(tagID, faceOffset, faceSide, requirements);
+    // .andThen(
+    //     new VisionReefAlign(
+    //         (Drivetrain) requirements[0],
+    //         (Limelight) requirements[1],
+    //         ReefAlignState.LeftSide));
   }
 }

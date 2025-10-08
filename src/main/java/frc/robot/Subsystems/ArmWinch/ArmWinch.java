@@ -96,7 +96,7 @@ public class ArmWinch extends SubsystemBase {
                   getPosition(),
                   new TrapezoidProfile.State(ArmWinchConstants.ControlConstants.holding, 0.0));
           io.setVoltage(PIDVoltage);
-    break;
+          break;
         case ManualControl:
           if (RobotContainer.driverController.a().getAsBoolean()) {
             io.setSpeed(0.05);

@@ -4,7 +4,7 @@ public class PivotConstants {
   public class HardwareConstants {
     public static int pivotSparkMaxID = 22;
     public static int thruBoreID = 0; // 7;//6;//4;
-    public static boolean motorInverted = false;//true;
+    public static boolean motorInverted = false; // true;
     public static boolean thruBoreInverted = true;
     public static double thruBoreExpectedZero = -0.58;
     public static double thruBoreFullRange = 1.0;

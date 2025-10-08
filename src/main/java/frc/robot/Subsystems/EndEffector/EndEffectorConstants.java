@@ -3,7 +3,7 @@ package frc.robot.Subsystems.EndEffector;
 public class EndEffectorConstants {
   public class HardwareConstants {
     public static int sideRollerID = 10;
-    public static boolean sideRollerInverted = false;//true; // In is positive
+    public static boolean sideRollerInverted = false; // true; // In is positive
     public static int sideRollerCurrentLimit = 60;
 
     // public static int topRollerID = 12;
@@ -23,7 +23,7 @@ public class EndEffectorConstants {
   }
 
   public class ControlConstants {
-    public static double kP = 1000;//400; // 60;
+    public static double kP = 1000; // 400; // 60;
     public static double kI = 0.0;
     public static double kD = 0.04;
 

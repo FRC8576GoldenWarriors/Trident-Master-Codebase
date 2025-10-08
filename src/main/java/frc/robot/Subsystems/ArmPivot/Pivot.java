@@ -111,9 +111,9 @@ public class Pivot extends SubsystemBase {
           io.setVoltage(inputVoltage);
           break;
         case FrontL1:
-        if(Math.abs(getThruBorePosition()-PivotConstants.ControlConstants.frontL1)<0.05){
-          PID.setP(50);
-        }
+          if (Math.abs(getThruBorePosition() - PivotConstants.ControlConstants.frontL1) < 0.05) {
+            PID.setP(50);
+          }
           PIDVoltage =
               PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.frontL1);
           FFVoltage =
@@ -127,9 +127,9 @@ public class Pivot extends SubsystemBase {
           io.setVoltage(inputVoltage);
           break;
         case FrontL2:
-        if(Math.abs(getThruBorePosition()-PivotConstants.ControlConstants.frontL2)<0.05){
-          PID.setP(50);
-        }
+          if (Math.abs(getThruBorePosition() - PivotConstants.ControlConstants.frontL2) < 0.05) {
+            PID.setP(50);
+          }
           PIDVoltage =
               PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.frontL2);
           FFVoltage =
@@ -143,9 +143,9 @@ public class Pivot extends SubsystemBase {
           io.setVoltage(inputVoltage);
           break;
         case FrontL3:
-        if(Math.abs(getThruBorePosition()-PivotConstants.ControlConstants.frontL3)<0.05){
-          PID.setP(50);
-        }
+          if (Math.abs(getThruBorePosition() - PivotConstants.ControlConstants.frontL3) < 0.05) {
+            PID.setP(50);
+          }
           PIDVoltage =
               PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.frontL3);
           FFVoltage =
@@ -159,9 +159,9 @@ public class Pivot extends SubsystemBase {
           io.setVoltage(inputVoltage);
           break;
         case FrontL4:
-        if(Math.abs(getThruBorePosition()-PivotConstants.ControlConstants.frontL4)<0.05){
-          PID.setP(50);
-        }
+          if (Math.abs(getThruBorePosition() - PivotConstants.ControlConstants.frontL4) < 0.05) {
+            PID.setP(50);
+          }
           PIDVoltage =
               PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.frontL4);
           FFVoltage =
@@ -223,9 +223,10 @@ public class Pivot extends SubsystemBase {
           io.setVoltage(inputVoltage);
           break;
         case GroundIntake:
-        if(Math.abs(getThruBorePosition()-PivotConstants.ControlConstants.groundIntake)<0.05){
-          PID.setP(50);
-        }
+          if (Math.abs(getThruBorePosition() - PivotConstants.ControlConstants.groundIntake)
+              < 0.05) {
+            PID.setP(50);
+          }
           PIDVoltage =
               PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.groundIntake);
           FFVoltage =
@@ -239,9 +240,10 @@ public class Pivot extends SubsystemBase {
           io.setVoltage(inputVoltage);
           break;
         case StationIntake:
-        if(Math.abs(getThruBorePosition()-PivotConstants.ControlConstants.stationIntake)<0.05){
-          PID.setP(50);
-        }
+          if (Math.abs(getThruBorePosition() - PivotConstants.ControlConstants.stationIntake)
+              < 0.05) {
+            PID.setP(50);
+          }
           PIDVoltage =
               PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.stationIntake);
           FFVoltage =
@@ -255,9 +257,9 @@ public class Pivot extends SubsystemBase {
           io.setVoltage(inputVoltage);
           break;
         case SetClimb:
-        if(Math.abs(getThruBorePosition()-PivotConstants.ControlConstants.setClimb)<0.05){
-          PID.setP(50);
-        }
+          if (Math.abs(getThruBorePosition() - PivotConstants.ControlConstants.setClimb) < 0.05) {
+            PID.setP(50);
+          }
           PIDVoltage =
               PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.setClimb);
           FFVoltage =
@@ -271,9 +273,9 @@ public class Pivot extends SubsystemBase {
           io.setVoltage(inputVoltage);
           break;
         case ClimbUp:
-        if(Math.abs(getThruBorePosition()-PivotConstants.ControlConstants.climbUp)<0.05){
-          PID.setP(50);
-        }
+          if (Math.abs(getThruBorePosition() - PivotConstants.ControlConstants.climbUp) < 0.05) {
+            PID.setP(50);
+          }
           PIDVoltage =
               PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.climbUp);
           FFVoltage =
@@ -287,9 +289,9 @@ public class Pivot extends SubsystemBase {
           io.setVoltage(inputVoltage);
           break;
         case ClimbDown:
-        if(Math.abs(getThruBorePosition()-PivotConstants.ControlConstants.climbDown)<0.05){
-          PID.setP(50);
-        }
+          if (Math.abs(getThruBorePosition() - PivotConstants.ControlConstants.climbDown) < 0.05) {
+            PID.setP(50);
+          }
           PIDVoltage =
               PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.climbDown);
           FFVoltage =
