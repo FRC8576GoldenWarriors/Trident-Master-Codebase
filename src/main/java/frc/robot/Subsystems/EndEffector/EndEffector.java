@@ -36,7 +36,8 @@ public class EndEffector extends SubsystemBase {
   private double FFVoltage;
   private double inputVoltage = 0.0;
 
-  private LoggedNetworkNumber kPLoggedNetworkNumber = new LoggedNetworkNumber("Tuning/End Effector kP",EndEffectorConstants.ControlConstants.kP);
+  private LoggedNetworkNumber kPLoggedNetworkNumber =
+      new LoggedNetworkNumber("Tuning/End Effector kP", EndEffectorConstants.ControlConstants.kP);
   private double kP = kPLoggedNetworkNumber.get();
 
   public EndEffector(EndEffectorIO io) {
@@ -45,7 +46,7 @@ public class EndEffector extends SubsystemBase {
             EndEffectorConstants.ControlConstants.kP,
             EndEffectorConstants.ControlConstants.kI,
             EndEffectorConstants.ControlConstants.kD,
-            new Constraints(5, 10.75));//0.5, 1
+            new Constraints(5, 10.75)); // 0.5, 1
     FF =
         new ArmFeedforward(
             EndEffectorConstants.ControlConstants.kS,
@@ -58,7 +59,7 @@ public class EndEffector extends SubsystemBase {
   @Override
   public void periodic() {
     io.updateInputs(inputs);
-    //340 Last kP Checked. Slow
+    // 340 Last kP Checked. Slow
     Logger.processInputs("End Effector", inputs);
     kP = kPLoggedNetworkNumber.get();
     PID.setP(kP);
@@ -87,11 +88,13 @@ public class EndEffector extends SubsystemBase {
           }
           break;
         case GroundIntake:
-        if(Math.abs(getPosition()-EndEffectorConstants.ControlConstants.groundIntakePosition)<0.05){
-          PID.setP(50);
-        }
+          if (Math.abs(getPosition() - EndEffectorConstants.ControlConstants.groundIntakePosition)
+              < 0.05) {
+            PID.setP(50);
+          }
           PIDVoltage =
-              PID.calculate(getPosition(), EndEffectorConstants.ControlConstants.groundIntakePosition);
+              PID.calculate(
+                  getPosition(), EndEffectorConstants.ControlConstants.groundIntakePosition);
           FFVoltage =
               -FF.calculate(
                   (EndEffectorConstants.ControlConstants.groundIntakePosition
@@ -102,14 +105,14 @@ public class EndEffector extends SubsystemBase {
           inputVoltage = PIDVoltage + FFVoltage;
           io.setPivotVoltage(inputVoltage);
           io.setRollerSpeeds(0.5);
-          if(getCoralDetected()){
-            wantedState=EndEffectorState.Idle;
+          if (getCoralDetected()) {
+            wantedState = EndEffectorState.Idle;
           }
           break;
         case L4:
-        if(Math.abs(getPosition()-EndEffectorConstants.ControlConstants.l4Position)<0.05){
-          PID.setP(50);
-        }
+          if (Math.abs(getPosition() - EndEffectorConstants.ControlConstants.l4Position) < 0.05) {
+            PID.setP(50);
+          }
           PIDVoltage =
               PID.calculate(getPosition(), EndEffectorConstants.ControlConstants.l4Position);
           FFVoltage =
@@ -143,7 +146,8 @@ public class EndEffector extends SubsystemBase {
   public double getPosition() {
     return inputs.thruBorePosition;
   }
-  public boolean getCoralDetected(){
+
+  public boolean getCoralDetected() {
     return inputs.coralDetected;
   }
 }

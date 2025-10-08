@@ -3,7 +3,7 @@ package frc.robot.Subsystems.EndEffector;
 public class EndEffectorConstants {
   public class HardwareConstants {
     public static int sideRollerID = 10;
-    public static boolean sideRollerInverted = false;//true; // In is positive
+    public static boolean sideRollerInverted = false; // true; // In is positive
     public static int sideRollerCurrentLimit = 60;
 
     // public static int topRollerID = 12;
@@ -23,7 +23,7 @@ public class EndEffectorConstants {
   }
 
   public class ControlConstants {
-    public static double kP = 1000;//400; // 60;
+    public static double kP = 1000; // 400; // 60;
     public static double kI = 0.0;
     public static double kD = 0.04;
 
@@ -32,8 +32,8 @@ public class EndEffectorConstants {
     public static double kV = 0.0;
     public static double kA = 0.0;
 
-    public static double groundIntakePosition = 0.05;//0;//0.05;
-    public static double l4Position = 0.13;//Actual Value//0.47
+    public static double groundIntakePosition = 0.05; // 0;//0.05;
+    public static double l4Position = 0.13; // Actual Value//0.47
     public static double COMOffset = 0.39446; // IN ROTATIONS
   }
 }

@@ -7,10 +7,11 @@ package frc.robot.Subsystems.SwerveDrive;
 import com.ctre.phoenix6.Utils;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathCommand;
+import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.util.PathPlannerLogging;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -21,11 +22,14 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.lib.drivers.WarriorSwervePoseEstimator;
 import frc.robot.Subsystems.SwerveDrive.Gyro.Gyro;
 import frc.robot.Subsystems.SwerveDrive.Gyro.GyroIO;
 import frc.robot.Subsystems.SwerveDrive.Module.*;
 import frc.robot.Subsystems.SwerveDrive.Module.Module;
+import frc.robot.Subsystems.Vision.Limelight.LimelightConstants;
 import frc.robot.Subsystems.Vision.Limelight.LimelightHelpers.PoseEstimate;
 import frc.robot.Subsystems.Vision.Limelight.LimelightIO;
 import org.littletonrobotics.junction.Logger;
@@ -47,7 +51,7 @@ public class Drivetrain extends SubsystemBase {
       new SlewRateLimiter(SwerveConstants.TELE_DRIVE_MAX_ANGULAR_ACCELERATION);
 
   private RobotConfig config;
-  private SwerveDrivePoseEstimator poseEstimator;
+  public WarriorSwervePoseEstimator poseEstimator;
 
   public Drivetrain(
       GyroIO gyroIO,
@@ -71,13 +75,26 @@ public class Drivetrain extends SubsystemBase {
     leftBack = new Module(leftBackModuleIO);
     rightBack = new Module(rightBackModuleIO);
     poseEstimator =
-        new SwerveDrivePoseEstimator(
-            SwerveConstants.DRIVE_KINEMATICS,
-            getHeadingRotation2d(),
-            getPositions(),
-            new Pose2d(),
-            VecBuilder.fill(0.1, 0.1, 0.00001),
-            VecBuilder.fill(0.3, 0.3, 9999999));
+        new WarriorSwervePoseEstimator(
+                SwerveConstants.DRIVE_KINEMATICS,
+                getHeadingRotation2d(),
+                getPositions(),
+                (this.isRedAlliance())
+                    ? new Pose2d(new Translation2d(), new Rotation2d(Math.PI))
+                    : new Pose2d(),
+                AprilTagFields.k2025ReefscapeAndyMark,
+                VecBuilder.fill(
+                    LimelightConstants.PoseEstimationConstants.baseDrivetrainXDeviaition,
+                    LimelightConstants.PoseEstimationConstants.baseDrivetrainYDeviaition,
+                    LimelightConstants.PoseEstimationConstants.baseDrivetrainThetaDeviaition),
+                VecBuilder.fill(
+                    LimelightConstants.PoseEstimationConstants.baseVisionXDeviaition,
+                    LimelightConstants.PoseEstimationConstants.baseVisionYDeviaition,
+                    LimelightConstants.PoseEstimationConstants.baseVisionThetaDeviaition),
+                LimelightConstants.PoseEstimationConstants.useDynamicVisionDeviations)
+            .withDriveUpdates(
+                Timer::getFPGATimestamp, this::getHeadingRotation2d, this::getPositions)
+            .withRobotSpeeds(this::getRobotRelativeSpeeds);
 
     try {
       config = RobotConfig.fromGUISettings();
@@ -120,6 +137,7 @@ public class Drivetrain extends SubsystemBase {
           Logger.recordOutput("Odometry/Target Pose", targetPose);
         });
     FollowPathCommand.warmupCommand().schedule();
+    PathfindingCommand.warmupCommand().schedule();
   }
 
   @Override
@@ -205,6 +223,10 @@ public class Drivetrain extends SubsystemBase {
       leftBack.getPosition(),
       rightBack.getPosition()
     };
+  }
+
+  public double getDistanceToTagMeters(int tagID) {
+    return this.poseEstimator.getDistanceToTagMeters(tagID);
   }
 
   public void setPose2d(Pose2d pose) {

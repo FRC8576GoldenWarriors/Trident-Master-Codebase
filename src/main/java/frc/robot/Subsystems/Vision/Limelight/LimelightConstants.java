@@ -4,36 +4,38 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class LimelightConstants {
 
   public static class NameConstants {
-    public static final String BARGE_NETWORKTABLE_KEY = "limelight-barge";
-    public static final String REEF_NETWORKTABLE_KEY = "limelight-reef";
+    public static final String RIGHT_NETWORKTABLE_KEY = "limelight-barge";
+    public static final String LEFT_NETWORKTABLE_KEY = "limelight-reef";
+    public static final List<String> LimelightKeys =
+        Arrays.asList(RIGHT_NETWORKTABLE_KEY, LEFT_NETWORKTABLE_KEY);
   }
 
   public static class PositionalConstants {
-    public static final Pose3d BARGE_LIMELIGHT_LOCATION =
+    public static final Pose3d RIGHT_LIMELIGHT_LOCATION =
         new Pose3d(
             new Translation3d(
-                -Units.inchesToMeters(6.018),
-                -Units.inchesToMeters(0.208),
-                Units.inchesToMeters(29.798)),
+                -Units.inchesToMeters(3.680140),
+                -Units.inchesToMeters(8.282677),
+                Units.inchesToMeters(9.662383)),
             new Rotation3d(
-                Units.degreesToRadians(0), Units.degreesToRadians(30), Units.degreesToRadians(0)));
+                Units.degreesToRadians(0), Units.degreesToRadians(15), Units.degreesToRadians(0)));
 
-    public static final Pose3d REEF_LIMELIGHT_LOCATION =
+    public static final Pose3d LEFT_LIMELIGHT_LOCATION =
         new Pose3d(
             new Translation3d(
-                -Units.inchesToMeters(8.490),
-                Units.inchesToMeters(3.025),
-                Units.inchesToMeters(8.052)),
+                -Units.inchesToMeters(3.684619),
+                Units.inchesToMeters(7.982677),
+                Units.inchesToMeters(9.679096)),
             new Rotation3d(
-                Units.degreesToRadians(0),
-                Units.degreesToRadians(20),
-                Units.degreesToRadians(180)));
+                Units.degreesToRadians(0), Units.degreesToRadians(15), Units.degreesToRadians(0)));
   }
 
   public static class PhysicalConstants {
@@ -61,6 +63,18 @@ public class LimelightConstants {
                 Map.entry(9, -60.0),
                 Map.entry(19, 120.0),
                 Map.entry(8, -120.0)));
+  }
+
+  public static class PoseEstimationConstants {
+    public static final boolean useDynamicVisionDeviations = true;
+
+    public static final double baseDrivetrainXDeviaition = 0.01;
+    public static final double baseDrivetrainYDeviaition = 0.01;
+    public static final double baseDrivetrainThetaDeviaition = 0.0000001;
+
+    public static final double baseVisionXDeviaition = 0.3;
+    public static final double baseVisionYDeviaition = 0.3;
+    public static final double baseVisionThetaDeviaition = 9999999;
   }
 
   public static class PIDConstants {
