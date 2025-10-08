@@ -32,8 +32,13 @@ public class EndEffectorConstants {
     public static double kV = 0.0;
     public static double kA = 0.0;
 
-    public static double groundIntakePosition = 0.05;//0;//0.05;
-    public static double l4Position = 0.13;//Actual Value//0.47
+    public static double groundIntakePosition = 0.02;//0;//0.05;
+    public static double l1Position = 0.2;
+    public static double l2Position = 0.2;
+    public static double l3Position = 0.28;
+    public static double l4Position = 0.42;//0.56//0.33;//Actual Value//0.47
+    public static double l4BackPosition = 0.2;
+    public static double holdPosition = 0.55;
     public static double COMOffset = 0.39446; // IN ROTATIONS
   }
 }

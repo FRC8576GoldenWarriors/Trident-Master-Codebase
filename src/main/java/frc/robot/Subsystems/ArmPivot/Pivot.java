@@ -51,13 +51,14 @@ public class Pivot extends SubsystemBase {
     // BackL1,
     // BackL2,
     // BackL3,
-    // BackL4,
+    BackL4,
     GroundIntake,
     StationIntake,
     SetClimb,
     ManualControl,
     ClimbUp,
-    ClimbDown
+    ClimbDown,
+    CloseHold
   }
 
   private PivotPositions wantedPosition = PivotPositions.Idle;
@@ -70,7 +71,8 @@ public class Pivot extends SubsystemBase {
             PivotConstants.ControlConstants.kI,
             PivotConstants.ControlConstants.kD,
             new Constraints(15, 20.0));
-    PID.setTolerance(0.03);
+    PID.setTolerance(0.002);
+    PID.setIZone(0.025);
     FF =
         new ArmFeedforward(
             PivotConstants.ControlConstants.kS,
@@ -93,14 +95,14 @@ public class Pivot extends SubsystemBase {
           io.setVoltage(0);
           break;
         case Rest:
-        if(Math.abs(getThruBorePosition()-PivotConstants.ControlConstants.startPosition)<0.05){
+        if(Math.abs(getThruBorePosition()-PivotConstants.ControlConstants.startingPosition)<0.05){
           PID.setP(50);
         }
           PIDVoltage =
-              PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.startPosition);
+              PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.startingPosition);
           FFVoltage =
               -FF.calculate(
-                  (PivotConstants.ControlConstants.startPosition
+                  (PivotConstants.ControlConstants.startingPosition
                           + PivotConstants.ControlConstants.COMOffset)
                       * Math.PI
                       * 2,
@@ -208,18 +210,18 @@ public class Pivot extends SubsystemBase {
         //   inputVoltage = PIDVoltage + FFVoltage;
         //   io.setVoltage(inputVoltage);
         //   break;
-        // case BackL4:
-        //   PIDVoltage = PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.backL4);
-        //   FFVoltage =
-        //       -FF.calculate(
-        //           (PivotConstants.ControlConstants.backL4
-        //                   + PivotConstants.ControlConstants.COMOffset)
-        //               * Math.PI
-        //               * 2,
-        //           0.5);
-        //   inputVoltage = PIDVoltage + FFVoltage;
-        //   io.setVoltage(inputVoltage);
-        //   break;
+        case BackL4:
+          PIDVoltage = PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.backL4);
+          FFVoltage =
+              -FF.calculate(
+                  (PivotConstants.ControlConstants.backL4
+                          + PivotConstants.ControlConstants.COMOffset)
+                      * Math.PI
+                      * 2,
+                  0.5);
+          inputVoltage = PIDVoltage + FFVoltage;
+          io.setVoltage(inputVoltage);
+          break;
         case GroundIntake:
         if(Math.abs(getThruBorePosition()-PivotConstants.ControlConstants.groundIntake)<0.05){
           PID.setP(50);
@@ -310,6 +312,22 @@ public class Pivot extends SubsystemBase {
             wantedPosition = PivotPositions.Idle;
           }
           break;
+        case CloseHold:
+        if(Math.abs(getThruBorePosition()-PivotConstants.ControlConstants.closeHold)<0.05){
+          PID.setP(50);
+        }
+          PIDVoltage =
+              PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.closeHold);
+          FFVoltage =
+              -FF.calculate(
+                  (PivotConstants.ControlConstants.closeHold
+                          + PivotConstants.ControlConstants.COMOffset)
+                      * Math.PI
+                      * 2,
+                  0.5);
+          inputVoltage = PIDVoltage + FFVoltage;
+          io.setVoltage(inputVoltage);
+          break;
         default:
           break;
       }
@@ -319,16 +337,26 @@ public class Pivot extends SubsystemBase {
     Logger.recordOutput("Arm Pivot/Input Voltage", inputVoltage);
     Logger.recordOutput("Arm Pivot/PID At Goal", PID.atGoal());
     Logger.recordOutput("Arm Pivot/Pivot Position", wantedPosition);
+    Logger.recordOutput("Arm Pivot/Goal Position", PID.getGoal().position);
+    Logger.recordOutput("Arm Pivot/PID Voltage",PIDVoltage);
+    Logger.recordOutput("Arm Pivot/FF Voltage",FFVoltage);
+    Logger.recordOutput("Arm Pivot/Position in threshold", positionInThreshold());
     // This method will be called once per scheduler run
   }
 
   public void setPivotPosition(PivotPositions wantedPosition) {
-    PID.reset(getThruBorePosition());
+    if(this.wantedPosition!=wantedPosition){
+    PID.reset(getThruBorePosition(),getThruBoreVelocity());
+    PID.setConstraints(new Constraints(15, 20));
+    }
     this.wantedPosition = wantedPosition;
   }
 
   public double getThruBorePosition() {
     return inputs.thruBorePosition;
+  }
+  public double getThruBoreVelocity(){
+    return inputs.thruBoreVelocity;
   }
 
   public PivotPositions getPosition() {
@@ -345,5 +373,8 @@ public class Pivot extends SubsystemBase {
     if (direction.equals(Direction.kForward))
       return routine.dynamic(direction).until(() -> getThruBorePosition() > .3);
     return routine.dynamic(direction);
+  }
+  public boolean positionInThreshold(){
+    return (Math.abs(getThruBorePosition()-PID.getGoal().position))<0.005;//0.016
   }
 }

@@ -24,7 +24,18 @@ public class EndEffector extends SubsystemBase {
     RollerVoltageControl,
     PivotVoltageControl,
     GroundIntake,
-    L4
+    GroundIntakeHold,
+    Hold,
+    L1,
+    L1Score,
+    L2,
+    L2Score,
+    L3,
+    L3Score,
+    L4,
+    L4Back,
+    L4Score,
+    L4BackScore
   }
 
   private EndEffectorState wantedState;
@@ -101,11 +112,41 @@ public class EndEffector extends SubsystemBase {
                   0.5);
           inputVoltage = PIDVoltage + FFVoltage;
           io.setPivotVoltage(inputVoltage);
-          io.setRollerSpeeds(0.5);
-          if(getCoralDetected()){
-            wantedState=EndEffectorState.Idle;
-          }
+          io.setRollerSpeeds(0.9);
           break;
+          case GroundIntakeHold:
+          if(Math.abs(getPosition()-EndEffectorConstants.ControlConstants.groundIntakePosition)<0.05){
+            PID.setP(50);
+          }
+            PIDVoltage =
+                PID.calculate(getPosition(), EndEffectorConstants.ControlConstants.groundIntakePosition);
+            FFVoltage =
+                -FF.calculate(
+                    (EndEffectorConstants.ControlConstants.groundIntakePosition
+                            + EndEffectorConstants.ControlConstants.COMOffset)
+                        * 2
+                        * Math.PI,
+                    0.5);
+            inputVoltage = PIDVoltage + FFVoltage;
+            io.setPivotVoltage(inputVoltage);
+            io.setRollerSpeeds(0.08);//0.1
+            break;
+          case L1:
+            if(Math.abs(getPosition()-EndEffectorConstants.ControlConstants.l1Position)<0.05){
+              PID.setP(50);
+            }
+              PIDVoltage =
+                  PID.calculate(getPosition(), EndEffectorConstants.ControlConstants.l1Position);
+              FFVoltage =
+                  -FF.calculate(
+                      (EndEffectorConstants.ControlConstants.l1Position
+                              + EndEffectorConstants.ControlConstants.COMOffset)
+                          * 2
+                          * Math.PI,
+                      0.5);
+              inputVoltage = PIDVoltage + FFVoltage;
+              io.setPivotVoltage(inputVoltage);
+              break;
         case L4:
         if(Math.abs(getPosition()-EndEffectorConstants.ControlConstants.l4Position)<0.05){
           PID.setP(50);
@@ -122,6 +163,158 @@ public class EndEffector extends SubsystemBase {
           inputVoltage = PIDVoltage + FFVoltage;
           io.setPivotVoltage(inputVoltage);
           break;
+          case L1Score:
+          if(Math.abs(getPosition()-EndEffectorConstants.ControlConstants.l1Position)<0.05){
+            PID.setP(50);
+          }
+            PIDVoltage =
+                PID.calculate(getPosition(), EndEffectorConstants.ControlConstants.l1Position);
+            FFVoltage =
+                -FF.calculate(
+                    (EndEffectorConstants.ControlConstants.l1Position
+                            + EndEffectorConstants.ControlConstants.COMOffset)
+                        * 2
+                        * Math.PI,
+                    0.5);
+            inputVoltage = PIDVoltage + FFVoltage;
+            io.setPivotVoltage(inputVoltage);
+            io.setRollerSpeeds(0.9);
+            break;
+
+            case L2:
+            if(Math.abs(getPosition()-EndEffectorConstants.ControlConstants.l2Position)<0.05){
+              PID.setP(50);
+            }
+              PIDVoltage =
+                  PID.calculate(getPosition(), EndEffectorConstants.ControlConstants.l2Position);
+              FFVoltage =
+                  -FF.calculate(
+                      (EndEffectorConstants.ControlConstants.l2Position
+                              + EndEffectorConstants.ControlConstants.COMOffset)
+                          * 2
+                          * Math.PI,
+                      0.5);
+              inputVoltage = PIDVoltage + FFVoltage;
+              io.setPivotVoltage(inputVoltage);
+              break;
+              case L2Score:
+              if(Math.abs(getPosition()-EndEffectorConstants.ControlConstants.l2Position)<0.05){
+                PID.setP(50);
+              }
+                PIDVoltage =
+                    PID.calculate(getPosition(), EndEffectorConstants.ControlConstants.l2Position);
+                FFVoltage =
+                    -FF.calculate(
+                        (EndEffectorConstants.ControlConstants.l2Position
+                                + EndEffectorConstants.ControlConstants.COMOffset)
+                            * 2
+                            * Math.PI,
+                        0.5);
+                inputVoltage = PIDVoltage + FFVoltage;
+                io.setPivotVoltage(inputVoltage);
+                io.setRollerSpeeds(-0.9);
+                break;
+
+                case L3:
+                if(Math.abs(getPosition()-EndEffectorConstants.ControlConstants.l3Position)<0.05){
+                  PID.setP(50);
+                }
+                  PIDVoltage =
+                      PID.calculate(getPosition(), EndEffectorConstants.ControlConstants.l3Position);
+                  FFVoltage =
+                      -FF.calculate(
+                          (EndEffectorConstants.ControlConstants.l3Position
+                                  + EndEffectorConstants.ControlConstants.COMOffset)
+                              * 2
+                              * Math.PI,
+                          0.5);
+                  inputVoltage = PIDVoltage + FFVoltage;
+                  io.setPivotVoltage(inputVoltage);
+                  break;
+                  case L3Score:
+                  if(Math.abs(getPosition()-EndEffectorConstants.ControlConstants.l3Position)<0.05){
+                    PID.setP(50);
+                  }
+                    PIDVoltage =
+                        PID.calculate(getPosition(), EndEffectorConstants.ControlConstants.l3Position);
+                    FFVoltage =
+                        -FF.calculate(
+                            (EndEffectorConstants.ControlConstants.l3Position
+                                    + EndEffectorConstants.ControlConstants.COMOffset)
+                                * 2
+                                * Math.PI,
+                            0.5);
+                    inputVoltage = PIDVoltage + FFVoltage;
+                    io.setPivotVoltage(inputVoltage);
+                    io.setRollerSpeeds(0.9);
+                    break;
+          case Hold:
+          if(Math.abs(getPosition()-EndEffectorConstants.ControlConstants.holdPosition)<0.05){
+            PID.setP(50);
+          }
+            PIDVoltage =
+                PID.calculate(getPosition(), EndEffectorConstants.ControlConstants.holdPosition);
+            FFVoltage =
+                -FF.calculate(
+                    (EndEffectorConstants.ControlConstants.holdPosition
+                            + EndEffectorConstants.ControlConstants.COMOffset)
+                        * 2
+                        * Math.PI,
+                    0.5);
+            inputVoltage = PIDVoltage + FFVoltage;
+            io.setPivotVoltage(inputVoltage);
+            io.setRollerSpeeds(0.08);//0.1
+            break;
+        case L4Score:
+        if(Math.abs(getPosition()-EndEffectorConstants.ControlConstants.l4Position)<0.05){
+          PID.setP(50);
+        }
+          PIDVoltage =
+              PID.calculate(getPosition(), EndEffectorConstants.ControlConstants.l4Position);
+          FFVoltage =
+              -FF.calculate(
+                  (EndEffectorConstants.ControlConstants.l4Position
+                          + EndEffectorConstants.ControlConstants.COMOffset)
+                      * 2
+                      * Math.PI,
+                  0.5);
+          inputVoltage = PIDVoltage + FFVoltage;
+          io.setPivotVoltage(inputVoltage);
+          io.setRollerSpeeds(-0.9);
+          break;
+          case L4Back:
+          if(Math.abs(getPosition()-EndEffectorConstants.ControlConstants.l4BackPosition)<0.05){
+            PID.setP(50);
+          }
+            PIDVoltage =
+                PID.calculate(getPosition(), EndEffectorConstants.ControlConstants.l4BackPosition);
+            FFVoltage =
+                -FF.calculate(
+                    (EndEffectorConstants.ControlConstants.l4BackPosition
+                            + EndEffectorConstants.ControlConstants.COMOffset)
+                        * 2
+                        * Math.PI,
+                    0.5);
+            inputVoltage = PIDVoltage + FFVoltage;
+            io.setPivotVoltage(inputVoltage);
+            break;
+            case L4BackScore:
+            if(Math.abs(getPosition()-EndEffectorConstants.ControlConstants.l4BackPosition)<0.05){
+              PID.setP(50);
+            }
+              PIDVoltage =
+                  PID.calculate(getPosition(), EndEffectorConstants.ControlConstants.l4BackPosition);
+              FFVoltage =
+                  -FF.calculate(
+                      (EndEffectorConstants.ControlConstants.l4BackPosition
+                              + EndEffectorConstants.ControlConstants.COMOffset)
+                          * 2
+                          * Math.PI,
+                      0.5);
+              inputVoltage = PIDVoltage + FFVoltage;
+              io.setPivotVoltage(inputVoltage);
+              io.setRollerSpeeds(0.9);
+              break;
         default:
           break;
       }
@@ -132,10 +325,12 @@ public class EndEffector extends SubsystemBase {
     Logger.recordOutput("End Effector/FF Voltage", FFVoltage);
     Logger.recordOutput("End Effector/Input Voltage", inputVoltage);
     Logger.recordOutput("End Effector/kP", PID.getP());
+    Logger.recordOutput("End Effector/Wanted State",wantedState);
     // This method will be called once per scheduler run
   }
 
   public void setWantedState(EndEffectorState wantedState) {
+    if(this.wantedState!=wantedState)
     PID.reset(getPosition());
     this.wantedState = wantedState;
   }
@@ -145,5 +340,9 @@ public class EndEffector extends SubsystemBase {
   }
   public boolean getCoralDetected(){
     return inputs.coralDetected;
+  }
+
+  public boolean endEffectorInRange(){
+    return Math.abs(getPosition()-PID.getGoal().position)<0.03;
   }
 }

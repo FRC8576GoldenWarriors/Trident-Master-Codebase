@@ -88,9 +88,8 @@ public class ArmWinch extends SubsystemBase {
           io.setVoltage(0);
           break;
         case Holding:
-        if (Math.abs(getPosition() - ArmWinchConstants.ControlConstants.holding) < 100
-              || getPosition() > ArmWinchConstants.ControlConstants.holding) {
-            // PID.setP(0.2);
+        if (Math.abs(getPosition() - ArmWinchConstants.ControlConstants.holding) < 200) {
+            PID.setP(0.08);
           }
           PIDVoltage =
               PID.calculate(
@@ -165,9 +164,8 @@ public class ArmWinch extends SubsystemBase {
           io.setVoltage(PIDVoltage);
           break;
         case FrontL4:
-          if (Math.abs(getPosition() - ArmWinchConstants.ControlConstants.frontL4) < 100
-              || getPosition() > ArmWinchConstants.ControlConstants.frontL4) {
-            // PID.setP(0.2);
+          if (Math.abs(getPosition() - ArmWinchConstants.ControlConstants.frontL4) < 200) {
+             PID.setP(0.08);
           }
           PIDVoltage =
               PID.calculate(
@@ -257,6 +255,7 @@ public class ArmWinch extends SubsystemBase {
   }
 
   public void setWantedState(WinchStates wantedState) {
+    if(this.wantedState!=wantedState)
     PID.reset(getPosition());
     this.wantedState = wantedState;
   }
