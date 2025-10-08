@@ -60,7 +60,7 @@ public class LimelightIO implements LimelightVisionIO {
               .getEntry("stddevs")
               .getDoubleArray(new double[12]);
 
-      if (limelightPose != null) {
+      if (limelightPose != null && inputs.hasTargets) {
         inputs.distance =
             (layout.getTagPose(inputs.tagId).get().getZ() - limelightPose.getZ())
                 / Math.tan(
