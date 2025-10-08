@@ -95,11 +95,13 @@ public class Pivot extends SubsystemBase {
           io.setVoltage(0);
           break;
         case Rest:
-        if(Math.abs(getThruBorePosition()-PivotConstants.ControlConstants.startingPosition)<0.05){
-          PID.setP(50);
-        }
+          if (Math.abs(getThruBorePosition() - PivotConstants.ControlConstants.startingPosition)
+              < 0.05) {
+            PID.setP(50);
+          }
           PIDVoltage =
-              PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.startingPosition);
+              PID.calculate(
+                  getThruBorePosition(), PivotConstants.ControlConstants.startingPosition);
           FFVoltage =
               -FF.calculate(
                   (PivotConstants.ControlConstants.startingPosition
@@ -174,42 +176,45 @@ public class Pivot extends SubsystemBase {
           inputVoltage = PIDVoltage + FFVoltage;
           io.setVoltage(inputVoltage);
           break;
-        // case BackL1:
-        //   PIDVoltage = PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.backL1);
-        //   FFVoltage =
-        //       -FF.calculate(
-        //           (PivotConstants.ControlConstants.backL1
-        //                   + PivotConstants.ControlConstants.COMOffset)
-        //               * Math.PI
-        //               * 2,
-        //           0.5);
-        //   inputVoltage = PIDVoltage + FFVoltage;
-        //   io.setVoltage(inputVoltage);
-        //   break;
-        // case BackL2:
-        //   PIDVoltage = PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.backL2);
-        //   FFVoltage =
-        //       -FF.calculate(
-        //           (PivotConstants.ControlConstants.backL2
-        //                   + PivotConstants.ControlConstants.COMOffset)
-        //               * Math.PI
-        //               * 2,
-        //           0.5);
-        //   inputVoltage = PIDVoltage + FFVoltage;
-        //   io.setVoltage(inputVoltage);
-        //   break;
-        // case BackL3:
-        //   PIDVoltage = PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.backL3);
-        //   FFVoltage =
-        //       -FF.calculate(
-        //           (PivotConstants.ControlConstants.backL3
-        //                   + PivotConstants.ControlConstants.COMOffset)
-        //               * Math.PI
-        //               * 2,
-        //           0.5);
-        //   inputVoltage = PIDVoltage + FFVoltage;
-        //   io.setVoltage(inputVoltage);
-        //   break;
+          // case BackL1:
+          //   PIDVoltage = PID.calculate(getThruBorePosition(),
+          // PivotConstants.ControlConstants.backL1);
+          //   FFVoltage =
+          //       -FF.calculate(
+          //           (PivotConstants.ControlConstants.backL1
+          //                   + PivotConstants.ControlConstants.COMOffset)
+          //               * Math.PI
+          //               * 2,
+          //           0.5);
+          //   inputVoltage = PIDVoltage + FFVoltage;
+          //   io.setVoltage(inputVoltage);
+          //   break;
+          // case BackL2:
+          //   PIDVoltage = PID.calculate(getThruBorePosition(),
+          // PivotConstants.ControlConstants.backL2);
+          //   FFVoltage =
+          //       -FF.calculate(
+          //           (PivotConstants.ControlConstants.backL2
+          //                   + PivotConstants.ControlConstants.COMOffset)
+          //               * Math.PI
+          //               * 2,
+          //           0.5);
+          //   inputVoltage = PIDVoltage + FFVoltage;
+          //   io.setVoltage(inputVoltage);
+          //   break;
+          // case BackL3:
+          //   PIDVoltage = PID.calculate(getThruBorePosition(),
+          // PivotConstants.ControlConstants.backL3);
+          //   FFVoltage =
+          //       -FF.calculate(
+          //           (PivotConstants.ControlConstants.backL3
+          //                   + PivotConstants.ControlConstants.COMOffset)
+          //               * Math.PI
+          //               * 2,
+          //           0.5);
+          //   inputVoltage = PIDVoltage + FFVoltage;
+          //   io.setVoltage(inputVoltage);
+          //   break;
         case BackL4:
           PIDVoltage = PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.backL4);
           FFVoltage =
@@ -315,9 +320,9 @@ public class Pivot extends SubsystemBase {
           }
           break;
         case CloseHold:
-        if(Math.abs(getThruBorePosition()-PivotConstants.ControlConstants.closeHold)<0.05){
-          PID.setP(50);
-        }
+          if (Math.abs(getThruBorePosition() - PivotConstants.ControlConstants.closeHold) < 0.05) {
+            PID.setP(50);
+          }
           PIDVoltage =
               PID.calculate(getThruBorePosition(), PivotConstants.ControlConstants.closeHold);
           FFVoltage =
@@ -340,16 +345,16 @@ public class Pivot extends SubsystemBase {
     Logger.recordOutput("Arm Pivot/PID At Goal", PID.atGoal());
     Logger.recordOutput("Arm Pivot/Pivot Position", wantedPosition);
     Logger.recordOutput("Arm Pivot/Goal Position", PID.getGoal().position);
-    Logger.recordOutput("Arm Pivot/PID Voltage",PIDVoltage);
-    Logger.recordOutput("Arm Pivot/FF Voltage",FFVoltage);
+    Logger.recordOutput("Arm Pivot/PID Voltage", PIDVoltage);
+    Logger.recordOutput("Arm Pivot/FF Voltage", FFVoltage);
     Logger.recordOutput("Arm Pivot/Position in threshold", positionInThreshold());
     // This method will be called once per scheduler run
   }
 
   public void setPivotPosition(PivotPositions wantedPosition) {
-    if(this.wantedPosition!=wantedPosition){
-    PID.reset(getThruBorePosition(),getThruBoreVelocity());
-    PID.setConstraints(new Constraints(15, 20));
+    if (this.wantedPosition != wantedPosition) {
+      PID.reset(getThruBorePosition(), getThruBoreVelocity());
+      PID.setConstraints(new Constraints(15, 20));
     }
     this.wantedPosition = wantedPosition;
   }
@@ -357,7 +362,8 @@ public class Pivot extends SubsystemBase {
   public double getThruBorePosition() {
     return inputs.thruBorePosition;
   }
-  public double getThruBoreVelocity(){
+
+  public double getThruBoreVelocity() {
     return inputs.thruBoreVelocity;
   }
 
@@ -376,7 +382,8 @@ public class Pivot extends SubsystemBase {
       return routine.dynamic(direction).until(() -> getThruBorePosition() > .3);
     return routine.dynamic(direction);
   }
-  public boolean positionInThreshold(){
-    return (Math.abs(getThruBorePosition()-PID.getGoal().position))<0.005;//0.016
+
+  public boolean positionInThreshold() {
+    return (Math.abs(getThruBorePosition() - PID.getGoal().position)) < 0.005; // 0.016
   }
 }

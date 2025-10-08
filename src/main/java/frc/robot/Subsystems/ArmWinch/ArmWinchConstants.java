@@ -28,10 +28,10 @@ public class ArmWinchConstants {
     public static double maxAcceleration = 10000; // 3000; // 720;//540;//360;//240;
 
     public static double holding = 175;
-    public static double frontL1 = 0;//2000;
-    public static double frontL2 = 0;//2500;
-    public static double frontL3 = 400;//4300;
-    public static double frontL4 = 1465;//6000;
+    public static double frontL1 = 0; // 2000;
+    public static double frontL2 = 0; // 2500;
+    public static double frontL3 = 400; // 4300;
+    public static double frontL4 = 1465; // 6000;
 
     public static double backL1 = 0.0;
     public static double backL2 = 0.0;
