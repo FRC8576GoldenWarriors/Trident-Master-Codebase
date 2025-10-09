@@ -36,7 +36,8 @@ public class Macros extends SubsystemBase {
     L3,
     L4,
     L4Back,
-    Score
+    Score,
+    ResetArm
   }
 
   
@@ -74,6 +75,9 @@ public class Macros extends SubsystemBase {
       case Score:
         score();
         break;
+      case ResetArm:
+        resetArm();
+        break;
       default:
         break;
     }
@@ -88,7 +92,7 @@ public class Macros extends SubsystemBase {
   private void groundIntake(){
     if(!m_EndEffector.getCoralDetected()){
     m_ArmPivot.setPivotPosition(PivotPositions.GroundIntake);
-    
+
     //m_EndEffector.setWantedState(EndEffectorState.Hold);
     // m_Winch.setWantedState(WinchStates.GroundIntake);
     // m_EndEffector.setWantedState(EndEffectorState.GroundIntake);
@@ -121,6 +125,10 @@ public class Macros extends SubsystemBase {
     // if(m_EndEffector.getCoralDetected()){
     //   m_ArmPivot.setPivotPosition(PivotPositions.FrontL4);
     // }
+  }
+  private void resetArm(){
+    m_ArmPivot.setPivotPosition(PivotPositions.BackL4);
+    m_EndEffector.setWantedState(EndEffectorState.Hold);
   }
 
   private void L1(){
