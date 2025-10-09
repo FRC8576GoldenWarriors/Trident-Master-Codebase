@@ -4,6 +4,8 @@
 
 package frc.robot.Subsystems.Vision.Limelight;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.util.Units;
@@ -19,23 +21,20 @@ import java.util.Collections;
 
 public class LimelightIO implements LimelightVisionIO {
   private String networkTableName;
-  // private StructPublisher<Pose2d> limelightRobotPose;
   private static Drivetrain drivetrainInstance = RobotContainer.m_Drivetrain;
+  private static AprilTagFieldLayout layout =
+      AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark);
+  private Pose3d limelightPose;
   public static boolean AlignedVar = false;
-
-  // private Stack<Double> tagSeenTimestampStack = new Stack<>();
 
   public LimelightIO(String networkTableName) {
     this.networkTableName = networkTableName;
-    // this.limelightRobotPose =
-    //     NetworkTableInstance.getDefault()
-    //         .getTable("Goldfish")
-    //         .getStructTopic("Limelight Vision Pose/" + networkTableName, Pose2d.struct)
-    //         .publish();
+    drivetrainInstance.poseEstimator.addPoseEstimateUpdaters(this::getPairPoseEstimate);
   }
 
   public LimelightIO(String networkTableName, Pose3d limelightPose) {
     this(networkTableName);
+    this.limelightPose = limelightPose;
     this.setLimelightLocation(limelightPose);
   }
 
@@ -46,60 +45,30 @@ public class LimelightIO implements LimelightVisionIO {
 
     if (inputs.hasTargets) {
       inputs.tagId = (int) LimelightHelpers.getFiducialID(networkTableName);
-      // tagSeenTimestampStack.add(Timer.getFPGATimestamp());
-      // Vertical Angle to Tag
       inputs.pitch = LimelightHelpers.getTY(networkTableName);
-      // Horizontal Angle to Tag
       inputs.yaw = LimelightHelpers.getTX(networkTableName);
       inputs.area = LimelightHelpers.getTA(networkTableName);
 
-      Pair<PoseEstimate, Boolean> megaTag1EstimateAndStatus = this.getMegaTag1RobotPoseEstimate();
-      Pair<PoseEstimate, Boolean> megaTag2EstimateAndStatus = this.getMegaTag2RobotPoseEstimate();
+      inputs.timeInSeconds = Timer.getFPGATimestamp();
+      var speeds = drivetrainInstance.getRobotRelativeSpeeds();
+      inputs.velocity =
+          Math.sqrt(Math.pow(speeds.vxMetersPerSecond, 2) + Math.pow(speeds.vyMetersPerSecond, 2));
 
-      inputs.megaTag1UpdateAccepted = megaTag1EstimateAndStatus.getSecond();
-      inputs.megaTag2UpdateAccepted = megaTag2EstimateAndStatus.getSecond();
-
-      var megaTag1PoseEstimate = megaTag1EstimateAndStatus.getFirst();
-      var megaTag2PoseEstimate = megaTag2EstimateAndStatus.getFirst();
-
-      inputs.megaTag1Estimate = megaTag1PoseEstimate.pose;
-      inputs.megaTag2Estimate = megaTag2PoseEstimate.pose;
-
-      inputs.megaTag1AmountOfTagsInView = megaTag1PoseEstimate.tagCount;
-      inputs.megaTag2AmountOfTagsInView = megaTag2PoseEstimate.tagCount;
-
-      inputs.miliLatencyMegaTag2 = megaTag2PoseEstimate.latency;
-      inputs.timestampMegaTag2 = megaTag2PoseEstimate.timestampSeconds;
-      // inputs.megaTag1ambiguity = megaTag1PoseEstimate.rawFiducials[0].ambiguity;
-      // inputs.megaTag2ambiguity = megaTag2PoseEstimate.rawFiducials[0].ambiguity;
-
-      if (!megaTag2PoseEstimate.pose.equals(null))
-        inputs.metaTag2XCord = megaTag2PoseEstimate.pose.getX();
-
-      inputs.megaTag1distanceToTagMeters = megaTag1PoseEstimate.avgTagDist;
-      inputs.megaTag2distanceToTagMeters = megaTag2PoseEstimate.avgTagDist;
-      var stddevs =
+      inputs.generatedStddevs =
           NetworkTableInstance.getDefault()
               .getTable("limelight")
               .getEntry("stddevs")
               .getDoubleArray(new double[12]);
-      inputs.generatedStddevs =
-          new double[] {
-            stddevs[0],
-            stddevs[1],
-            stddevs[2],
-            stddevs[3],
-            stddevs[4],
-            stddevs[5],
-            stddevs[6],
-            stddevs[7],
-            stddevs[8],
-            stddevs[9],
-            stddevs[10],
-            stddevs[11],
-            drivetrainInstance.getForwardVelocity(),
-            Timer.getFPGATimestamp()
-          };
+
+      if (limelightPose != null && inputs.hasTargets) {
+        inputs.distance =
+            (layout.getTagPose(inputs.tagId).get().getZ() - limelightPose.getZ())
+                / Math.tan(
+                    Math.abs(limelightPose.getRotation().getY())
+                        + Math.toRadians(Math.abs(inputs.pitch)));
+      } else {
+        inputs.distance = 0; // Default value or handle appropriately
+      }
     }
 
     // this.setDynamicCrop();
@@ -138,31 +107,6 @@ public class LimelightIO implements LimelightVisionIO {
     return networkTableName;
   }
 
-  public void integratePose() {
-
-    double xDev = .3;
-    double yDev = .3;
-    double thetaDev = 9999999;
-
-    // xDev *= Math.log(1000) /
-    // Math.log(drivetrainInstance.getRobotRelativeSpeeds().vxMetersPerSecond);
-    // yDev *= Math.log(1000) /
-    // Math.log(drivetrainInstance.getRobotRelativeSpeeds().vyMetersPerSecond);
-
-    // if(megaTag2PoseEstimate.getFirst().tagCount >= 2) {
-    //   xDev = 1/(2 * megaTag2PoseEstimate.getFirst().tagCount);
-    //   yDev = 1/(2 * megaTag2PoseEstimate.getFirst().tagCount);
-    // }
-
-    // if (megaTag2PoseEstimate.getFirst().tagCount == 0) {
-    //   xDev = 1.4;
-    //   yDev = 1.4;
-    //   thetaDev = 1.4;
-    // }
-
-    drivetrainInstance.addVisionMeasurement(this, xDev, yDev, thetaDev);
-  }
-
   private void setCrop(double leftCrop, double rightCrop, double bottomCrop, double topCrop) {
     LimelightHelpers.setCropWindow(networkTableName, leftCrop, rightCrop, bottomCrop, topCrop);
   }
@@ -180,9 +124,9 @@ public class LimelightIO implements LimelightVisionIO {
             .getEntry("tcornxy")
             .getDoubleArray(new double[0]);
 
-    int tagsWithSuitbaleCorners = corners.length / 8;
+    int tagsWithSuitableCorners = corners.length / 8;
 
-    for (int i = 0; i < (8 * tagsWithSuitbaleCorners - 1); i++) {
+    for (int i = 0; i < (8 * tagsWithSuitableCorners - 1); i++) {
       if (i % 2 == 0) cornerXList.add(corners[i]);
       else cornerYList.add(corners[i]);
     }
@@ -198,87 +142,25 @@ public class LimelightIO implements LimelightVisionIO {
         Collections.max(cornerYList).doubleValue());
   }
 
-  private Pair<PoseEstimate, Boolean> getMegaTag1RobotPoseEstimate() {
-    boolean acceptUpdate = true;
-    LimelightHelpers.PoseEstimate megaTagEstimate =
-        (isBlueAlliance())
-            ? LimelightHelpers.getBotPoseEstimate_wpiBlue(networkTableName)
-            : LimelightHelpers.getBotPoseEstimate_wpiRed(networkTableName);
-
-    if (megaTagEstimate.tagCount == 0) acceptUpdate = false;
-
-    if (acceptUpdate) {
-
-      if (megaTagEstimate.tagCount == 1
-          && megaTagEstimate.rawFiducials.length == 1
-          && (megaTagEstimate.rawFiducials[0].ambiguity > .1
-              || megaTagEstimate.rawFiducials[0].distToCamera > 3)) acceptUpdate = false;
-    }
-
-    // if (acceptUpdate) {
-
-    //   drivetrainInstance.setVisionMeasurementStdDevs(.5, .5, 9999999);
-
-    //   drivetrainInstance.addVisionMeasurement(
-    //       megaTagEstimate.pose, megaTagEstimate.timestampSeconds);
-    // }
-
-    return Pair.of(megaTagEstimate, acceptUpdate);
-  }
-
-  private Pair<PoseEstimate, Boolean> getMegaTag2RobotPoseEstimate() {
-
-    boolean acceptUpdate = true;
-
-    LimelightHelpers.SetRobotOrientation(
-        networkTableName,
-        drivetrainInstance
-            .getBlueAbsoluteHeading(), // maybe change to blue absolute, idk if it changes
-        // anything.
-        0,
-        0,
-        0,
-        0,
-        0);
-
-    LimelightHelpers.PoseEstimate megaTagEstimate =
-        LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(networkTableName);
-    // (isBlueAlliance())
-    //     ? LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(networkTableName)
-    //     : LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2(networkTableName);
-
-    // if (megaTagEstimate.tagCount == 0) acceptUpdate = false;
-
-    // if (acceptUpdate) {
-
-    //   if (megaTagEstimate.tagCount == 1
-    //       && megaTagEstimate.rawFiducials.length == 1
-    //       && (megaTagEstimate.rawFiducials[0].ambiguity > .25
-    //           || megaTagEstimate.rawFiducials[0].distToCamera > 3)) acceptUpdate = false;
-
-    //   if (Math.abs(drivetrainInstance.getRate()) > 720) acceptUpdate = false;
-    // }
-
-    // if (acceptUpdate) {
-
-    //   drivetrainInstance.setVisionMeasurementStdDevs(.7, .7, 9999999);
-
-    //   drivetrainInstance.addVisionMeasurement(
-    //       megaTagEstimate.pose, megaTagEstimate.timestampSeconds);
-    // }
-
-    return Pair.of(megaTagEstimate, acceptUpdate);
-  }
-
   public PoseEstimate getPoseEstimate() {
     return LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(networkTableName);
+  }
+
+  public Pair<String, PoseEstimate> getPairPoseEstimate() {
+    return Pair.of(
+        this.networkTableName,
+        LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2(networkTableName));
   }
 
   public void setRobotOrientation(double yaw) {
     LimelightHelpers.SetRobotOrientation(networkTableName, yaw, 0, 0, 0, 0, 0);
   }
 
+  public static void setRobotOrientation(String limelightName, double yaw) {
+    LimelightHelpers.SetRobotOrientation(limelightName, yaw, 0, 0, 0, 0, 0);
+  }
+
   public static boolean isBlueAlliance() {
-    return DriverStation.getAlliance().get().equals(Alliance.Blue);
+    return DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Blue;
   }
 }

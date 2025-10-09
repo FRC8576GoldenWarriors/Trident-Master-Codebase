@@ -49,8 +49,7 @@ public class EndEffectorIOSparkMax implements EndEffectorIO {
     inputs.pivotVoltage = pivotMotor.getOutputCurrent();
     inputs.pivotCurrent = pivotMotor.getOutputCurrent();
 
-    inputs.coralDetected =
-        coralSensor.getIsDetected().asSupplier().get();
+    inputs.coralDetected = coralSensor.getIsDetected().asSupplier().get();
     inputs.rangeConnected = coralSensor.isConnected();
 
     inputs.thruBorePosition = pivotThruBore.get();

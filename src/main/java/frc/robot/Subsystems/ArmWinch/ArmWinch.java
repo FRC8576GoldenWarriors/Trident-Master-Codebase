@@ -88,7 +88,7 @@ public class ArmWinch extends SubsystemBase {
           io.setVoltage(0);
           break;
         case Holding:
-        if (Math.abs(getPosition() - ArmWinchConstants.ControlConstants.holding) < 200) {
+          if (Math.abs(getPosition() - ArmWinchConstants.ControlConstants.holding) < 200) {
             PID.setP(0.08);
           }
           PIDVoltage =
@@ -96,7 +96,7 @@ public class ArmWinch extends SubsystemBase {
                   getPosition(),
                   new TrapezoidProfile.State(ArmWinchConstants.ControlConstants.holding, 0.0));
           io.setVoltage(PIDVoltage);
-    break;
+          break;
         case ManualControl:
           if (RobotContainer.driverController.a().getAsBoolean()) {
             io.setSpeed(0.05);
@@ -165,7 +165,7 @@ public class ArmWinch extends SubsystemBase {
           break;
         case FrontL4:
           if (Math.abs(getPosition() - ArmWinchConstants.ControlConstants.frontL4) < 200) {
-             PID.setP(0.08);
+            PID.setP(0.08);
           }
           PIDVoltage =
               PID.calculate(
@@ -255,8 +255,7 @@ public class ArmWinch extends SubsystemBase {
   }
 
   public void setWantedState(WinchStates wantedState) {
-    if(this.wantedState!=wantedState)
-    PID.reset(getPosition());
+    if (this.wantedState != wantedState) PID.reset(getPosition());
     this.wantedState = wantedState;
   }
 

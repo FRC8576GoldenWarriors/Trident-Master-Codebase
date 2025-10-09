@@ -1,7 +1,6 @@
 package frc.robot.Subsystems.Vision.Limelight;
 
 import edu.wpi.first.math.Pair;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,12 +58,6 @@ public class Limelight extends SubsystemBase {
     return this.getInputsFromLimelightName(limelightName).connected;
   }
 
-  public double getDistanceToTag(String limelightName, boolean isMegaTag2) {
-    return isMegaTag2
-        ? this.getInputsFromLimelightName(limelightName).megaTag2distanceToTagMeters
-        : this.getInputsFromLimelightName(limelightName).megaTag1distanceToTagMeters;
-  }
-
   public double getYaw(String limelightName) {
     return this.getInputsFromLimelightName(limelightName).yaw;
   }
@@ -73,21 +66,17 @@ public class Limelight extends SubsystemBase {
     return this.getInputsFromLimelightName(limelightName).pitch;
   }
 
-  public Pose2d getPose2d(String limelightName) {
-    return this.getInputsFromLimelightName(limelightName).megaTag2Estimate;
-  }
-
   public boolean getAlignStatus(String limelightName) {
     return this.getInputsFromLimelightName(limelightName).isAligned;
+  }
+
+  public double getDistanceToTagUsingTrig(String limelightName) {
+    return this.getInputsFromLimelightName(limelightName).distance;
   }
 
   public void setAlignStatus(String limelightName, boolean alignStatus) {
     this.getInputsFromLimelightName(limelightName).isAligned = alignStatus;
     Logger.recordOutput("alignStatusForSet", alignStatus);
-  }
-
-  public double getTimeStamp(String limelightName) {
-    return this.getInputsFromLimelightName(limelightName).timestampMegaTag2;
   }
 
   @Override
@@ -97,7 +86,6 @@ public class Limelight extends SubsystemBase {
       var curPair = limelightInputAndOutput.get(i);
 
       var io = curPair.getFirst();
-      io.integratePose();
       var input = curPair.getSecond();
 
       io.updateInputs(input);
