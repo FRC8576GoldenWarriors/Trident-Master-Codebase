@@ -23,18 +23,18 @@ public class PivotConstants {
     public static double kA = 0.0;
 
     public static double frontL1 = .1; // 0.3//0.1; // 0.07;
-    public static double frontL2 = 0.2;
+    public static double frontL2 = .16;//.14;//0.2;
     public static double frontL3 = 0.2;
-    public static double frontL4 = 0.28; // 0.2;
-    public static double startingPosition = 0.15; // 0.2;
+    public static double frontL4 = .24;//0.28; // 0.2;
+    public static double startingPosition = 0.24;//0.15; // 0.2;
 
     public static double backL1 = 0.0;
     public static double backL2 = 0.0;
     public static double backL3 = 0.0;
-    public static double backL4 = 0.0;
+    public static double backL4 = 0.28;
 
     public static double closeHold = 0.1;
-    public static double groundIntake = 0.036; // 0.034
+    public static double groundIntake = 0.04; // 0.034
     public static double stationIntake = 0.0;
 
     public static double setClimb = 0.0;

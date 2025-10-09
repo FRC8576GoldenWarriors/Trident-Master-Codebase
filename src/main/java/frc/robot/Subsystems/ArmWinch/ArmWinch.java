@@ -153,9 +153,8 @@ public class ArmWinch extends SubsystemBase {
           io.setVoltage(PIDVoltage);
           break;
         case FrontL3:
-          if (Math.abs(getPosition() - ArmWinchConstants.ControlConstants.frontL3) < 100
-              || getPosition() > ArmWinchConstants.ControlConstants.frontL3) {
-            // PID.setP(0.2);
+          if (Math.abs(getPosition() - ArmWinchConstants.ControlConstants.frontL3) < 200) {
+             PID.setP(0.2);
           }
           PIDVoltage =
               PID.calculate(

@@ -110,7 +110,7 @@ public class Robot extends LoggedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    
+    RobotContainer.m_Drivetrain.resetEncoders();
   //RobotContainer.armWinch.setWantedState(WinchStates.Zeroing);
     // m_drivetrain.setHeading((m_drivetrain.getHeading()+180));
 

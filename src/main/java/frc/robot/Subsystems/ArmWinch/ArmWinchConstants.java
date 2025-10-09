@@ -30,13 +30,13 @@ public class ArmWinchConstants {
     public static double holding = 175;
     public static double frontL1 = 0; // 2000;
     public static double frontL2 = 0; // 2500;
-    public static double frontL3 = 400; // 4300;
-    public static double frontL4 = 1465; // 6000;
+    public static double frontL3 = 600;//400; // 4300;
+    public static double frontL4 = 1480; // 6000;
 
     public static double backL1 = 0.0;
     public static double backL2 = 0.0;
     public static double backL3 = 0.0;
-    public static double backL4 = 0.0;
+    public static double backL4 = 1465;
 
     public static double groundIntake = 0.00;
     public static double stationIntake = 0.0;

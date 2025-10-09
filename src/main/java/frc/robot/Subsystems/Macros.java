@@ -68,6 +68,9 @@ public class Macros extends SubsystemBase {
       case L4:
         L4();
         break;
+      case L4Back:
+        L4Back();
+        break;
       case Score:
         score();
         break;
@@ -85,6 +88,8 @@ public class Macros extends SubsystemBase {
   private void groundIntake(){
     if(!m_EndEffector.getCoralDetected()){
     m_ArmPivot.setPivotPosition(PivotPositions.GroundIntake);
+    
+    //m_EndEffector.setWantedState(EndEffectorState.Hold);
     // m_Winch.setWantedState(WinchStates.GroundIntake);
     // m_EndEffector.setWantedState(EndEffectorState.GroundIntake);
     }
@@ -128,21 +133,25 @@ public class Macros extends SubsystemBase {
     m_EndEffector.setWantedState(EndEffectorState.L2);
   }
   private void L3(){
-    m_ArmPivot.setPivotPosition(PivotPositions.FrontL2);
-    m_EndEffector.setWantedState(EndEffectorState.L2);
+    m_ArmPivot.setPivotPosition(PivotPositions.FrontL3);
+    m_EndEffector.setWantedState(EndEffectorState.L3);
     m_Winch.setWantedState(WinchStates.FrontL3);
   }
 
   private void L4(){
     m_ArmPivot.setPivotPosition(PivotPositions.FrontL4);
+    if(m_ArmPivot.positionInThreshold()){
     m_EndEffector.setWantedState(EndEffectorState.L4);
     m_Winch.setWantedState(WinchStates.FrontL4);
   }
+}
 
   private void L4Back(){
     m_ArmPivot.setPivotPosition(PivotPositions.BackL4);
+    if(m_ArmPivot.positionInThreshold()){
     m_EndEffector.setWantedState(EndEffectorState.L4Back);
     m_Winch.setWantedState(WinchStates.BackL4);
+    }
   }
 
   private void score(){
@@ -165,6 +174,7 @@ public class Macros extends SubsystemBase {
         m_ArmPivot.setPivotPosition(PivotPositions.Rest);
         m_Winch.setWantedState(WinchStates.Holding);
     }
+  }
     if(m_ArmPivot.getPosition()==PivotPositions.FrontL2){
       if(m_EndEffector.getCoralDetected()){
       m_EndEffector.setWantedState(EndEffectorState.L2Score);
@@ -183,11 +193,9 @@ public class Macros extends SubsystemBase {
         m_EndEffector.setWantedState(EndEffectorState.Hold);
         m_ArmPivot.setPivotPosition(PivotPositions.Rest);
         m_Winch.setWantedState(WinchStates.Holding);
-    }
-    
+    } 
   }
 }
-    }
   public void setWantedState(states wantedState){
     this.wantedState = wantedState;
   }

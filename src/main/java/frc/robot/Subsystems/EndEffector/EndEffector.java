@@ -217,7 +217,7 @@ public class EndEffector extends SubsystemBase {
                   0.5);
           inputVoltage = PIDVoltage + FFVoltage;
           io.setPivotVoltage(inputVoltage);
-          io.setRollerSpeeds(-0.9);
+          io.setRollerSpeeds(0.9);
           break;
 
         case L3:
@@ -285,7 +285,7 @@ public class EndEffector extends SubsystemBase {
                   0.5);
           inputVoltage = PIDVoltage + FFVoltage;
           io.setPivotVoltage(inputVoltage);
-          io.setRollerSpeeds(-0.9);
+          io.setRollerSpeeds(0.9);
           break;
         case L4Back:
           if (Math.abs(getPosition() - EndEffectorConstants.ControlConstants.l4BackPosition)

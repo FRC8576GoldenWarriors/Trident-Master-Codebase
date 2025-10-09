@@ -384,6 +384,6 @@ public class Pivot extends SubsystemBase {
   }
 
   public boolean positionInThreshold() {
-    return (Math.abs(getThruBorePosition() - PID.getGoal().position)) < 0.005; // 0.016
+    return (Math.abs(getThruBorePosition() - PID.getGoal().position)) < 0.002; // 0.016
   }
 }
